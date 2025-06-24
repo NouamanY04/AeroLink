@@ -65,7 +65,7 @@ const Signup = () => {
 
       // 3. Store in Laravel backend
       await createUser({
-        username: user.username,
+        name: user.username,
         email: user.email,
         password: user.password
       });
@@ -95,7 +95,7 @@ const Signup = () => {
             min-h-[450px] flex flex-col sm:flex-row overflow-hidden'>
           {/* Left Side - Full Height */}
           <div className='bg-gradient-to-br from-blue-600 to-blue-800 w-full sm:w-1/2 p-6 sm:p-8 flex flex-col justify-center min-h-[450px]'>
-            <h1 className='text-white font-semibold text-lg sm:text-xl md:text-2xl'>SkyRoute</h1>
+            <h1 className='text-white font-semibold text-lg sm:text-xl md:text-2xl'>AeroLink</h1>
             <p className='text-white/90 font-medium text-[10px] sm:text-xs md:text-sm mt-2'>
               Book Your Next Adventure with Ease
             </p>
@@ -105,7 +105,7 @@ const Signup = () => {
           <div className='w-full sm:w-1/2 p-4 sm:p-6 flex items-center'>
             <div className="w-[92%] sm:w-[85%] mx-auto p-4 sm:p-6 border border-gray-300 rounded-lg shadow-sm flex flex-col gap-4">
               <h2 className='font-bold text-blue-600 text-base sm:text-lg text-center'>Get Started</h2>
-              <p className='text-gray-500 text-[10px] sm:text-xs text-center'>Welcome To SkyRoute - Let's create your account</p>
+              <p className='text-gray-500 text-[10px] sm:text-xs text-center'>Welcome To AeroLink - Let's create your account</p>
 
               {/* Form Inputs */}
               <form onSubmit={HandleSubmit} className='flex flex-col gap-3'>

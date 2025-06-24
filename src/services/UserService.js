@@ -6,7 +6,7 @@ export const createUser = async (userData) => {
     console.log('Creating user with data:', userData);
     try {
         const response = await axios.post(API_URL, {
-            name: userData.username,
+            name: userData.name,
             email: userData.email,
             password: userData.password,
             phone: userData.phone || null,

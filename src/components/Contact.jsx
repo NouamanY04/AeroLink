@@ -64,7 +64,7 @@ function Contact() {
             <div className='text-lg font-medium mb-2 text-black'>
               Contact us via email
             </div>
-            <div><FontAwesomeIcon icon={faEnvelope} className='mr-2' /> support@SkyRoute.com</div>
+            <div><FontAwesomeIcon icon={faEnvelope} className='mr-2' /> support@AeroLink.com</div>
           </div>
           <div className="call">
             <div className='text-lg font-medium mb-2 text-black'>

@@ -6,7 +6,7 @@ function Footer() {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
-                        <h3 className="text-2xl font-bold mb-4">SkyRoute</h3>
+                        <h3 className="text-2xl font-bold mb-4">AeroLink</h3>
                         <p className="text-gray-400">Making travel accessible and affordable for everyone.</p>
                     </div>
 
@@ -42,7 +42,7 @@ function Footer() {
                 </div>
 
                 <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-                    <p className="text-gray-400">&copy; 2025 SkyRoute. All rights reserved.</p>
+                    <p className="text-gray-400">&copy; 2025 AeroLink. All rights reserved.</p>
                 </div>
             </div>
         </footer>

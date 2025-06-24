@@ -13,7 +13,7 @@ function About() {
             <header className="bg-blue-800  text-white py-14 px-3">
                 <div className="max-w-5xl mx-auto">
                     <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
-                        About SkyRoute
+                        About AeroLink
                     </h1>
                     <p className="text-lg text-center max-w-2xl mx-auto">
                         Your trusted partner in air travel, making flight bookings simple,
@@ -28,15 +28,15 @@ function About() {
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                         <div className="rounded-lg overflow-hidden shadow-lg">
                             <img
-                                src="hero-airplane.jpg"
-                                alt="Airplane view"
-                                className="w-full h-[320px] object-cover"
+                                src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80"
+                                alt="Commercial airplane flying through clouds"
+                                className="w-full h-[320px] object-cover hover:scale-105 transition-transform duration-300"
                             />
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
                             <p className="text-gray-600 text-base mb-4">
-                                At SkyRoute, we're committed to revolutionizing the way people book their flights.
+                                At AeroLink, we're committed to revolutionizing the way people book their flights.
                                 Our mission is to provide a seamless, user-friendly platform that makes finding
                                 and booking the perfect flight as easy as possible.
                             </p>

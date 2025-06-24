@@ -8,11 +8,11 @@ import Flights from "./components/Flights";
 import ForgetPassword from "./components/ForgetPassword";
 import About from "./components/About";
 import Contact from "./components/Contact";
-import Layout from './Layouts/Layout';
-import Dashboard from './pages/Dashboard';
-import Contactus from './pages/Contact-us';
-import Account from './pages/Account';
-import Tickets from './pages/Tickets';
+import Layout from './dashboard/Layouts/Layout';
+import Dashboard from './dashboard/pages/Dashboard';
+import Contactus from './dashboard/pages/Contact-us';
+import Account from './dashboard/pages/Account';
+import Tickets from './dashboard/pages/Tickets';
 
 function App() {
   return (

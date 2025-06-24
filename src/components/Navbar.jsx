@@ -39,6 +39,12 @@ function Navbar() {
 
   const fetchUserProfile = async (userId) => {
     try {
+      const username = localStorage.getItem('username');
+      if (username) {
+        setUser({ username });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -46,11 +52,13 @@ function Navbar() {
         .single();
 
       if (error) throw error;
+
       setUser(data);
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
   };
+
 
   const handleLogout = async () => {
     try {
@@ -71,11 +79,22 @@ function Navbar() {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 2L3 7v11a1 1 0 001 1h3v-8h6v8h3a1 1 0 001-1V7l-7-5z" />
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                />
               </svg>
             </div>
-            <span className="text-2xl font-bold text-blue-600">SkyRoute</span>
+            <span className="text-2xl font-bold text-blue-600">AeroLink</span>
           </div>
 
           {/* Navigation Links */}
@@ -88,12 +107,46 @@ function Navbar() {
 
           {/* User Account */}
           <div className="flex items-center space-x-4">
-            <Link to={'/login'}  className="hidden md:flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-gray-700">U</span>
+            {user ? (
+              <div className="relative group hidden md:block">
+                <button
+                  className="flex items-center space-x-2 focus:outline-none"
+                  onClick={() => setShowUserDropdown(!showUserDropdown)}
+                >
+                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
+                    {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <span className="text-gray-700">{user.username || 'User'}</span>
+                </button>
+
+                {/* Dropdown */}
+                {showUserDropdown && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-md z-50">
+                    <Link
+                      to="/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to={'/login'} className="hidden md:flex items-center space-x-2">
+                {user ? <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-gray-700">L</span>
                 </div>
+                  : ''}
                 <span className="text-gray-700">Login</span>
-            </Link>
+              </Link>
+            )}
+
 
             {/* Mobile menu button */}
             <button className="md:hidden p-2">

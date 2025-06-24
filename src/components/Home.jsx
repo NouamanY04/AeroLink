@@ -120,7 +120,7 @@ function Home() {
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Why Choose SkyRoute?</h2>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Why Choose AeroLink?</h2>
             <p className="text-lg text-gray-600">We make travel booking simple and affordable</p>
           </div>
 
