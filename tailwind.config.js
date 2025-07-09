@@ -7,9 +7,9 @@ module.exports = {
       fontFamily: {
         istok: ['Istok Web', 'sans-serif'],
       },
-      colors:{
-        backgroundnavbar:'#f9fbff',
-        lightergray:'#FDFDFD'
+      colors: {
+        backgroundnavbar: '#f9fbff',
+        lightergray: '#FDFDFD'
       },
       keyframes: {
         moveRight: {
