@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import Footer from '../../components/layout/Footer'
 import Navbar from '../../components/layout/Navbar';
 
-
 function FlightsDisplay() {
     const [nbrElementsToShow, setNbrElementsToShow] = useState({ airline: 4, stops: 3, type: 4 });
+    // the const flights should contains data from API instead of redux
     const flights = useSelector((state) => state.flights.flights);
     const infoTrip = useSelector((state) => state.infoTrip.infoTrip);
     const [isFilterVisible, setIsFilterVisible] = useState(true);
@@ -35,7 +35,7 @@ function FlightsDisplay() {
     }
 
     const flightsWanted = filterFlightsBasedOnUserTrip();
-
+    console.log(flightsWanted)
 
     function removeDuplicates(key) {
         return [...new Set(flightsWanted.map((item) => item[key]))];
@@ -394,7 +394,7 @@ function FlightsDisplay() {
                                                         {/* Departure */}
                                                         <div className="text-center">
                                                             <div className="text-lg font-bold text-gray-900">{flight.heure_depart}</div>
-                                                            <div className="text-xs text-gray-600 capitalize">{flight.departure_place}</div>
+                                                            <div className="text-xs text-gray-600 capitalize">{flight.departure_airport.name}</div>
                                                         </div>
 
                                                         {/* Flight Path */}
@@ -418,7 +418,7 @@ function FlightsDisplay() {
                                                         {/* Arrival */}
                                                         <div className="text-center">
                                                             <div className="text-lg font-bold text-gray-900">{flight.heure_arrive}</div>
-                                                            <div className="text-xs text-gray-600 capitalize">{flight.arrival_place}</div>
+                                                            <div className="text-xs text-gray-600 capitalize">{flight.arrival_airport.name}</div>
                                                         </div>
                                                     </div>
                                                 </div>

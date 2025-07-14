@@ -28,7 +28,6 @@ const ProfileSettings = () => {
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', icon: User },
-    { id: 'preferences', label: 'Travel Preferences', icon: Armchair },
     { id: 'security', label: 'Security', icon: Lock }
   ];
 
@@ -185,75 +184,6 @@ const ProfileSettings = () => {
                   onChange={(e) => handlePersonalInfoChange('passportNumber', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'preferences' && (
-          <div className="space-y-4">
-            {/* Travel Preferences */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Seat Preference</label>
-                <select
-                  value={travelPreferences.seatPreference}
-                  onChange={(e) => handlePreferenceChange('seatPreference', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="aisle">Aisle</option>
-                  <option value="window">Window</option>
-                  <option value="middle">Middle</option>
-                  <option value="no-preference">No Preference</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Meal Preference</label>
-                <select
-                  value={travelPreferences.mealPreference}
-                  onChange={(e) => handlePreferenceChange('mealPreference', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="regular">Regular</option>
-                  <option value="vegetarian">Vegetarian</option>
-                  <option value="vegan">Vegan</option>
-                  <option value="halal">Halal</option>
-                  <option value="kosher">Kosher</option>
-                  <option value="gluten-free">Gluten Free</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Language</label>
-                <select
-                  value={travelPreferences.language}
-                  onChange={(e) => handlePreferenceChange('language', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="english">English</option>
-                  <option value="spanish">Spanish</option>
-                  <option value="french">French</option>
-                  <option value="german">German</option>
-                  <option value="chinese">Chinese</option>
-                  <option value="japanese">Japanese</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Currency</label>
-                <select
-                  value={travelPreferences.currency}
-                  onChange={(e) => handlePreferenceChange('currency', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="usd">USD - US Dollar</option>
-                  <option value="eur">EUR - Euro</option>
-                  <option value="gbp">GBP - British Pound</option>
-                  <option value="jpy">JPY - Japanese Yen</option>
-                  <option value="cad">CAD - Canadian Dollar</option>
-                  <option value="aud">AUD - Australian Dollar</option>
-                </select>
               </div>
             </div>
           </div>

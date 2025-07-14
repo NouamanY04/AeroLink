@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import Navbar from '../../components/layout/Navbar'
 import Footer from '../../components/layout/Footer'
 import { Icon } from '@iconify/react/dist/iconify.js'
-import { addClient } from '../../redux/reducers/actions'
 import Cardform from '../../components/payment/Cardform'
 import Paypalform from '../../components/payment/PaypalformTEMP'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

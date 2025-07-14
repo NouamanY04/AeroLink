@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setInfoTrip, fetch_data_flights } from '../../redux/reducers/actions';
+import { setInfoTrip, store_data_flights } from '../../store/reducers/actions';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { getFlights } from '../../services/flightsService';
 
 function SearchForm() {
     const dispatch = useDispatch();
@@ -91,22 +91,25 @@ function SearchForm() {
             alert('Please fill in all required fields.');
             return;
         }
+
         setIsLoading(true);
+
         try {
-            // Dispatch the latest infoTrip to Redux
-            dispatch(setInfoTrip({
-                ...infoTrip,
-                to: destinationInput // ensure destinationInput is used
-            }));
+            // Fetch flights based on infoTrip
+            const flights = await getFlights(); // Pass search params if needed
+
+            // Save flights to Redux - the 'api' parameter tells the action to transform the data
+            dispatch(store_data_flights(flights, 'api'));
+
             navigate('/FlightsDisplay');
         } catch (error) {
             console.error('Search failed:', error);
+            // Optional: Show error message to user
+            alert('Failed to search flights. Please try again.');
         } finally {
             setIsLoading(false);
         }
     };
-
-
     useEffect(() => {
         setDestinationInput(infoTrip.to || '');
     }, [infoTrip.to]);

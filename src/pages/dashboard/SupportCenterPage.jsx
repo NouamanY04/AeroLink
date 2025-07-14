@@ -80,32 +80,6 @@ const SupportCenter = () => {
     }
   ];
 
-  const contactOptions = [
-    {
-      type: 'phone',
-      title: 'Phone Support',
-      description: '24/7 customer service',
-      contact: '+1 (800) 123-4567',
-      icon: Phone,
-      available: true
-    },
-    {
-      type: 'email',
-      title: 'Email Support',
-      description: 'Response within 24 hours',
-      contact: 'support@AeroLink.com',
-      icon: Mail,
-      available: true
-    },
-    {
-      type: 'chat',
-      title: 'Live Chat',
-      description: 'Available 9 AM - 9 PM EST',
-      contact: 'Start Chat',
-      icon: MessageCircle,
-      available: false
-    }
-  ];
 
   const recentTickets = [
     {
@@ -264,36 +238,6 @@ const SupportCenter = () => {
 
         {activeTab === 'contact' && (
           <div className="space-y-4">
-            {/* Contact Options */}
-            <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-2">Contact Options</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                {contactOptions.map((option) => {
-                  const Icon = option.icon;
-                  return (
-                    <div key={option.type} className="border border-gray-200 rounded-lg p-2 hover:shadow transition-shadow">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <Icon className="h-4 w-4 text-blue-600" />
-                        </div>
-                        <div>
-                          <h5 className="font-medium text-xs text-gray-900">{option.title}</h5>
-                          <p className="text-[10px] text-gray-500">{option.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-gray-900">{option.contact}</span>
-                        <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium ${option.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                          }`}>
-                          {option.available ? 'Available' : 'Offline'}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Contact Form */}
             <div>
               <h4 className="text-sm font-medium text-gray-900 mb-2">Submit a Support Request</h4>

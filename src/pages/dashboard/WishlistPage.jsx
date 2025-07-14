@@ -15,7 +15,7 @@ const Wishlist = () => {
       bestTimeToVisit: 'Apr - Jun, Sep - Oct',
       dateAdded: '2024-02-15',
       notes: 'Visit the Eiffel Tower and Louvre Museum',
-      priceAlert: true
+
     },
     {
       id: 2,
@@ -26,7 +26,6 @@ const Wishlist = () => {
       bestTimeToVisit: 'Mar - May, Sep - Nov',
       dateAdded: '2024-02-10',
       notes: 'Cherry blossom season and traditional temples',
-      priceAlert: false
     },
     {
       id: 3,
@@ -37,7 +36,6 @@ const Wishlist = () => {
       bestTimeToVisit: 'Apr - Jun, Sep - Oct',
       dateAdded: '2024-01-28',
       notes: 'Beautiful sunsets and white architecture',
-      priceAlert: true
     },
     {
       id: 4,
@@ -48,7 +46,6 @@ const Wishlist = () => {
       bestTimeToVisit: 'Apr - Oct',
       dateAdded: '2024-01-20',
       notes: 'Tropical beaches and cultural experiences',
-      priceAlert: false
     },
     {
       id: 5,
@@ -59,7 +56,6 @@ const Wishlist = () => {
       bestTimeToVisit: 'Nov - Mar',
       dateAdded: '2024-01-15',
       notes: 'Modern architecture and luxury shopping',
-      priceAlert: true
     }
   ];
 
@@ -86,9 +82,6 @@ const Wishlist = () => {
     console.log('Removing item from wishlist:', id);
   };
 
-  const togglePriceAlert = (id) => {
-    console.log('Toggling price alert for:', id);
-  };
 
   const searchFlights = (destination) => {
     console.log('Searching flights to:', destination);
@@ -98,17 +91,14 @@ const Wishlist = () => {
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">My Wishlist</h3>
-            <p className="text-xs text-gray-500 mt-1">Save destinations you want to visit</p>
-          </div>
-
-          <button className="flex items-center space-x-1 bg-blue-600 text-white px-2 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-xs">
-            <Plus className="h-3 w-3" />
-            <span>Add Destination</span>
-          </button>
+        <div className="flex items-center space-x-2">
+          <h3 className="text-base font-semibold text-gray-900">My Wishlist</h3>
+          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+            {sortedItems.length} {sortedItems.length > 1 ? 'destinations' : 'destination'}
+          </span>
         </div>
+        <p className="text-xs text-gray-500 mt-1">Save destinations you want to visit</p>
+
 
         {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-3">
@@ -174,16 +164,6 @@ const Wishlist = () => {
                       <span className="font-semibold text-xs text-gray-900">{item.estimatedPrice}</span>
                       <span className="text-[10px] text-gray-500">estimated</span>
                     </div>
-
-                    <button
-                      onClick={() => togglePriceAlert(item.id)}
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${item.priceAlert
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                    >
-                      {item.priceAlert ? 'Alert ON' : 'Alert OFF'}
-                    </button>
                   </div>
 
                   {/* Best Time to Visit */}
@@ -205,25 +185,6 @@ const Wishlist = () => {
                   </div>
                 </div>
 
-                {/* Card Actions */}
-                <div className="px-3 pb-3 space-y-1">
-                  <button
-                    onClick={() => searchFlights(item.destination)}
-                    className="w-full flex items-center justify-center space-x-1 bg-blue-600 text-white py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-xs"
-                  >
-                    <Plane className="h-3 w-3" />
-                    <span>Search Flights</span>
-                  </button>
-
-                  <div className="flex space-x-1">
-                    <button className="flex-1 text-blue-600 hover:text-blue-700 text-[10px] font-medium py-1 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
-                      View Details
-                    </button>
-                    <button className="flex-1 text-gray-600 hover:text-gray-700 text-[10px] font-medium py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      Edit Notes
-                    </button>
-                  </div>
-                </div>
               </div>
             ))}
           </div>
@@ -248,33 +209,6 @@ const Wishlist = () => {
         )}
       </div>
 
-      {/* Quick Stats */}
-      {sortedItems.length > 0 && (
-        <div className="px-4 pb-4">
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center">
-              <div>
-                <p className="text-lg font-bold text-blue-600">{sortedItems.length}</p>
-                <p className="text-xs text-gray-600">Destinations</p>
-              </div>
-              <div>
-                <p className="text-lg font-bold text-green-600">
-                  {sortedItems.filter(item => item.priceAlert).length}
-                </p>
-                <p className="text-xs text-gray-600">Price Alerts</p>
-              </div>
-              <div>
-                <p className="text-lg font-bold text-purple-600">
-                  ${Math.round(sortedItems.reduce((sum, item) =>
-                    sum + parseInt(item.estimatedPrice.replace(/[$,]/g, '')), 0) / sortedItems.length
-                  ).toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-600">Avg. Price</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

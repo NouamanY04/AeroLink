@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetch_data_flights, setInfoContact, setInfoTrip } from '../../redux/reducers/actions';
+import {setInfoTrip } from '../../store/reducers/actions';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import SearchForm from '../../components/flights/SearchForm';

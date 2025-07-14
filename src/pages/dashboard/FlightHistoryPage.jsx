@@ -94,11 +94,51 @@ const FlightHistory = () => {
     }
   ];
 
+  // Helper to check if a flight matches the filters
+  const filterFlights = (flight) => {
+    // Date Range filter
+    if (filters.dateRange) {
+      const flightDate = new Date(flight.date);
+      const now = new Date();
+      if (filters.dateRange === 'last-month') {
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        if (flightDate < lastMonth) return false;
+      } else if (filters.dateRange === 'last-3-months') {
+        const last3Months = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+        if (flightDate < last3Months) return false;
+      } else if (filters.dateRange === 'last-year') {
+        const lastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        if (flightDate < lastYear) return false;
+      }
+    }
+    // Destination filter
+    if (filters.destination && !flight.to.toLowerCase().includes(filters.destination.toLowerCase())) {
+      return false;
+    }
+    // Airline filter
+    if (filters.airline) {
+      const airlineMap = {
+        'emirates': 'Emirates',
+        'lufthansa': 'Lufthansa',
+        'air-france': 'Air France',
+        'singapore': 'Singapore Airlines',
+      };
+      if (flight.airline !== airlineMap[filters.airline]) return false;
+    }
+    // Status filter
+    if (filters.status) {
+      if (flight.status.toLowerCase() !== filters.status) return false;
+    }
+    return true;
+  };
+
+  // Apply filters before pagination
+  const filteredFlights = flightHistory.filter(filterFlights);
   const itemsPerPage = 3;
-  const totalPages = Math.ceil(flightHistory.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredFlights.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentFlights = flightHistory.slice(startIndex, endIndex);
+  const currentFlights = filteredFlights.slice(startIndex, endIndex);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -136,83 +176,66 @@ const FlightHistory = () => {
       <div className="p-4 border-b border-gray-200">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
           <h3 className="text-base font-semibold text-gray-900">Flight History</h3>
-
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-1 px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-xs"
-            >
-              <Filter className="h-3 w-3" />
-              <span>Filters</span>
-            </button>
-
-            <button className="flex items-center space-x-1 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-xs">
-              <Download className="h-3 w-3" />
-              <span>Export</span>
-            </button>
-          </div>
         </div>
 
         {/* Filters */}
-        {showFilters && (
-          <div className="mt-3 p-3 bg-gray-50 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Date Range</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={filters.dateRange}
-                  onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                >
-                  <option value="">All Time</option>
-                  <option value="last-month">Last Month</option>
-                  <option value="last-3-months">Last 3 Months</option>
-                  <option value="last-year">Last Year</option>
-                </select>
-              </div>
+        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Date Range</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={filters.dateRange}
+                onChange={(e) => handleFilterChange('dateRange', e.target.value)}
+              >
+                <option value="">All Time</option>
+                <option value="last-month">Last Month</option>
+                <option value="last-3-months">Last 3 Months</option>
+                <option value="last-year">Last Year</option>
+              </select>
+            </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Destination</label>
-                <input
-                  type="text"
-                  placeholder="Search destination..."
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={filters.destination}
-                  onChange={(e) => handleFilterChange('destination', e.target.value)}
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Destination</label>
+              <input
+                type="text"
+                placeholder="Search destination..."
+                className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={filters.destination}
+                onChange={(e) => handleFilterChange('destination', e.target.value)}
+              />
+            </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Airline</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={filters.airline}
-                  onChange={(e) => handleFilterChange('airline', e.target.value)}
-                >
-                  <option value="">All Airlines</option>
-                  <option value="emirates">Emirates</option>
-                  <option value="lufthansa">Lufthansa</option>
-                  <option value="air-france">Air France</option>
-                  <option value="singapore">Singapore Airlines</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Airline</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={filters.airline}
+                onChange={(e) => handleFilterChange('airline', e.target.value)}
+              >
+                <option value="">All Airlines</option>
+                <option value="emirates">Emirates</option>
+                <option value="lufthansa">Lufthansa</option>
+                <option value="air-france">Air France</option>
+                <option value="singapore">Singapore Airlines</option>
+              </select>
+            </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={filters.status}
-                  onChange={(e) => handleFilterChange('status', e.target.value)}
-                >
-                  <option value="">All Status</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="delayed">Delayed</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={filters.status}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+              >
+                <option value="">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="delayed">Delayed</option>
+              </select>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Flight List */}
@@ -276,15 +299,6 @@ const FlightHistory = () => {
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex flex-col space-y-1 lg:ml-4">
-                <button className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium">
-                  Download Receipt
-                </button>
-                <button className="border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium">
-                  View Details
-                </button>
-              </div>
             </div>
           </div>
         ))}
@@ -294,7 +308,7 @@ const FlightHistory = () => {
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center justify-between">
           <p className="text-xs text-gray-500">
-            Showing {startIndex + 1} to {Math.min(endIndex, flightHistory.length)} of {flightHistory.length} flights
+            Showing {startIndex + 1} to {Math.min(endIndex, filteredFlights.length)} of {filteredFlights.length} flights
           </p>
 
           <div className="flex items-center space-x-1">

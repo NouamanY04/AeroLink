@@ -149,13 +149,6 @@ const PaymentMethods = () => {
             {/* Add New Card Button */}
             <div className="flex justify-between items-center">
               <h4 className="text-base font-medium text-gray-900">Saved Payment Methods</h4>
-              <button
-                onClick={() => setShowAddCard(true)}
-                className="flex items-center space-x-1 bg-blue-600 text-white px-2 py-1 rounded-lg hover:bg-blue-700 transition-colors text-xs"
-              >
-                <Plus className="h-3 w-3" />
-                <span>Add Payment Method</span>
-              </button>
             </div>
 
             {/* Payment Methods List */}
@@ -317,37 +310,26 @@ const PaymentMethods = () => {
         {activeTab === 'billing' && (
           <div className="space-y-4">
             {/* Billing Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-              <div className="bg-blue-50 rounded-lg p-2">
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="text-xs text-blue-600 font-medium">Total Spent</p>
-                    <p className="text-lg font-bold text-blue-900">$6,220</p>
-                  </div>
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Total Spent */}
+              <div className="w-full bg-blue-50 rounded-xl p-4 flex items-center space-x-4">
+                <DollarSign className="h-6 w-6 text-blue-600" />
+                <div>
+                  <p className="text-sm font-medium text-blue-600">Total Spent</p>
+                  <p className="text-xl font-bold text-blue-900">$6,220</p>
                 </div>
               </div>
 
-              <div className="bg-green-50 rounded-lg p-2">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5 text-green-600" />
-                  <div>
-                    <p className="text-xs text-green-600 font-medium">This Year</p>
-                    <p className="text-lg font-bold text-green-900">$3,340</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-purple-50 rounded-lg p-2">
-                <div className="flex items-center space-x-2">
-                  <CreditCard className="h-5 w-5 text-purple-600" />
-                  <div>
-                    <p className="text-xs text-purple-600 font-medium">Transactions</p>
-                    <p className="text-lg font-bold text-purple-900">24</p>
-                  </div>
+              {/* Transactions */}
+              <div className="w-full bg-purple-50 rounded-xl p-4 flex items-center space-x-4">
+                <CreditCard className="h-6 w-6 text-purple-600" />
+                <div>
+                  <p className="text-sm font-medium text-purple-600">Transactions</p>
+                  <p className="text-xl font-bold text-purple-900">24</p>
                 </div>
               </div>
             </div>
+
 
             {/* Billing History */}
             <div>
@@ -368,7 +350,6 @@ const PaymentMethods = () => {
                       <th className="text-left py-2 px-2 font-medium text-xs text-gray-900">Amount</th>
                       <th className="text-left py-2 px-2 font-medium text-xs text-gray-900">Payment Method</th>
                       <th className="text-left py-2 px-2 font-medium text-xs text-gray-900">Status</th>
-                      <th className="text-left py-2 px-2 font-medium text-xs text-gray-900">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -386,16 +367,7 @@ const PaymentMethods = () => {
                             {transaction.status}
                           </span>
                         </td>
-                        <td className="py-2 px-2">
-                          <div className="flex items-center space-x-1">
-                            <button className="text-blue-600 hover:text-blue-700 text-xs">
-                              <Eye className="h-3 w-3" />
-                            </button>
-                            <button className="text-blue-600 hover:text-blue-700 text-xs">
-                              <Download className="h-3 w-3" />
-                            </button>
-                          </div>
-                        </td>
+
                       </tr>
                     ))}
                   </tbody>
