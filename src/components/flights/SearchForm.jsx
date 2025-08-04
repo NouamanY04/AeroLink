@@ -18,6 +18,7 @@ function SearchForm() {
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
+
     const airports = [
         { code: 'LAX', name: 'Los Angeles International Airport', city: 'Los Angeles', country: 'USA' },
         { code: 'JFK', name: 'John F. Kennedy International Airport', city: 'New York', country: 'USA' },
@@ -54,31 +55,6 @@ function SearchForm() {
         dispatch(setInfoTrip({ ...infoTrip, type: e.target.value }));
     };
 
-    const handleAdultsIncrement = () => {
-        dispatch(setInfoTrip({ ...infoTrip, nbrAdults: Math.max(1, Number(nbrAdults) + 1) }));
-    };
-
-    const handleAdultsDecrement = () => {
-        dispatch(setInfoTrip({ ...infoTrip, nbrAdults: Math.max(1, Number(nbrAdults) - 1) }));
-    };
-
-    const handleChildrenIncrement = () => {
-        dispatch(setInfoTrip({ ...infoTrip, nbrChildren: Math.max(0, Number(nbrChildren) + 1) }));
-    };
-
-    const handleChildrenDecrement = () => {
-        dispatch(setInfoTrip({ ...infoTrip, nbrChildren: Math.max(0, Number(nbrChildren) - 1) }));
-    };
-
-    const handlePassangersAdultsChange = (e) => {
-        const value = Math.max(1, Number(e.target.value));
-        dispatch(setInfoTrip({ ...infoTrip, nbrAdults: value }));
-    };
-
-    const handlePassagersChildsChange = (e) => {
-        const value = Math.max(0, Number(e.target.value));
-        dispatch(setInfoTrip({ ...infoTrip, nbrChildren: value }));
-    };
 
     function isFormValid() {
         if (!from || !to || !date_depart) return false;
@@ -95,8 +71,18 @@ function SearchForm() {
         setIsLoading(true);
 
         try {
+            const params = {
+                departure_city: infoTrip.from,
+                arrival_city: infoTrip.to,
+                departure_time: infoTrip.date_depart, // format: YYYY-MM-DD
+                return_time: infoTrip.date_Arrive,       // format: YYYY-MM-DD (optional)
+            };
+
+
             // Fetch flights based on infoTrip
-            const flights = await getFlights(); // Pass search params if needed
+            const flights = await getFlights(params); // Pass search params if needed
+
+            // console.log('Fetched flights:', flights);
 
             // Save flights to Redux - the 'api' parameter tells the action to transform the data
             dispatch(store_data_flights(flights, 'api'));
@@ -155,76 +141,79 @@ function SearchForm() {
     };
 
     return (
-        <div className="bg-white p-8 rounded-xl shadow-2xl max-w-5xl mx-auto mt-10" style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}>
+        <div className="bg-white rounded-2xl shadow-lg max-w-7xl mx-auto mt-6" style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}>
             {/* Trip Type Selection */}
-            <div className="flex justify-center space-x-8 mb-8">
+            <div className="flex justify-start space-x-8 p-6 pb-4">
                 <label className="inline-flex items-center cursor-pointer">
                     <input
                         type="radio"
-                        className="form-radio text-blue-600 w-5 h-5"
+                        className="form-radio text-blue-600 w-4 h-4"
                         name="tripType"
                         value="oneWay"
                         checked={typeTrip === 'oneWay'}
                         onChange={handleTripTypeChange}
                     />
-                    <span className="ml-3 text-gray-800 font-medium text-lg">One-way</span>
+                    <span className="ml-2 text-gray-700 font-medium text-sm">One-way</span>
                 </label>
                 <label className="inline-flex items-center cursor-pointer">
                     <input
                         type="radio"
-                        className="form-radio text-blue-600 w-5 h-5"
+                        className="form-radio text-blue-600 w-4 h-4"
                         name="tripType"
                         value="roundTrip"
                         checked={typeTrip === 'roundTrip'}
                         onChange={handleTripTypeChange}
                     />
-                    <span className="ml-3 text-gray-800 font-medium text-lg">Round Trip</span>
+                    <span className="ml-2 text-gray-700 font-medium text-sm">Round Trip</span>
                 </label>
             </div>
 
-            {/* Search Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
+            {/* Search Fields Container */}
+            <div className="flex items-end bg-gray-50 rounded-xl mx-6 mb-6 overflow-hidden border border-gray-200">
+                {/* From Field */}
+                <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">From</label>
                     <div className="relative">
                         <input
                             type="text"
                             placeholder="Departure city"
                             name="from"
-                            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-12 text-gray-700"
+                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none placeholder-gray-400"
                             value={from || ""}
                             onChange={e => dispatch(setInfoTrip({ ...infoTrip, from: e.target.value }))}
                             autoComplete="off"
                             required
                         />
-                        <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
                     </div>
                 </div>
 
-                <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
+                {/* Swap Button */}
+                <div className="flex items-center justify-center px-2 bg-white border-r border-gray-200">
+                    <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* To Field */}
+                <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors relative">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">To</label>
                     <div className="relative">
                         <input
                             type="text"
                             name="to"
                             autoComplete="off"
                             placeholder="Search by city or country"
-                            className="w-full p-4 border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-12"
+                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none placeholder-gray-400"
                             value={destinationInput}
                             onChange={handleDestinationInputChange}
                             onFocus={() => destinationInput && setShowSuggestions(true)}
                             onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
                             required
                         />
-                        <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
                         {showSuggestions && suggestions.length > 0 && (
-                            <ul className="absolute z-10 left-0 right-0 bg-white text-black border border-gray-200 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-lg">
+                            <ul className="absolute z-20 left-0 right-0 top-full bg-white text-black border border-gray-200 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-xl">
                                 {suggestions.map((destination, index) => {
                                     const searchTerm = destinationInput.toLowerCase();
 
@@ -274,119 +263,59 @@ function SearchForm() {
                     </div>
                 </div>
 
-                <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Departure Date</label>
+                {/* Departure Date */}
+                <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors">
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Depart</label>
                     <div className="relative">
                         <input
                             type="date"
                             name="date_depart"
-                            className="w-full p-4 border text-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-12"
+                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none"
                             value={date_depart}
                             onChange={handleDateDepartChange}
                             required
                         />
-                        <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
                     </div>
                 </div>
 
-                <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Return Date</label>
+                {/* Return Date */}
+                <div className={`flex-1 bg-white p-4 hover:bg-gray-50 transition-colors ${typeTrip === 'oneWay' ? 'opacity-50' : ''} ${typeTrip !== 'oneWay' ? 'border-r border-gray-200' : ''}`}>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Return</label>
                     <div className="relative">
                         <input
                             type="date"
                             name="date_Arrive"
-                            className={`w-full p-4 border ${returnDateError ? 'border-red-500' : 'border-gray-300'} text-gray-700 rounded-lg focus:outline-none focus:ring-2 ${returnDateError ? 'focus:ring-red-500' : 'focus:ring-blue-500'} focus:border-transparent pl-12`}
+                            className={`w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none ${returnDateError ? 'text-red-500' : ''}`}
                             value={date_Arrive}
                             onChange={handleDateArriveChange}
                             disabled={typeTrip === 'oneWay'}
                             required={typeTrip === 'roundTrip'}
                             min={date_depart || undefined}
                         />
-                        <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
                     </div>
-                    {returnDateError && (
-                        <p className="text-red-600 text-xs mt-1">{returnDateError}</p>
-                    )}
-                </div>
-            </div>
 
-            {/* Passengers and Search Button */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 mt-6">
-                <div className="flex flex:col sm:flex-row sm:justify-between items-center gap-8 bg-gray-50 px-6 py-4 rounded-xl shadow-sm w-full md:w-auto md:gap-10 flex-wrap">                    {/* Adults */}
-                    <div className="flex flex-col items-center w-full sm:w-auto">
-                        <span className="text-gray-700 font-medium mb-1">Adults</span>
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-xl font-bold text-gray-700 hover:bg-blue-100 transition"
-                                onClick={handleAdultsDecrement}
-                                disabled={Number(nbrAdults) <= 1}
-                            >-</button>
-                            <input
-                                id="adults"
-                                type="text"
-                                min={1}
-                                value={nbrAdults}
-                                onChange={handlePassangersAdultsChange}
-                                className="w-12 h-8 text-center border border-gray-300 rounded-lg bg-white text-gray-900 font-semibold focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                            />
-                            <button
-                                type="button"
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-xl font-bold text-gray-700 hover:bg-blue-100 transition"
-                                onClick={handleAdultsIncrement}
-                            >+</button>
-                        </div>
-                    </div>
-                    {/* Children */}
-                    <div className="flex flex-col items-center w-full sm:w-auto">
-                        <span className="text-gray-700 font-medium mb-1">Children</span>
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-xl font-bold text-gray-700 hover:bg-blue-100 transition"
-                                onClick={handleChildrenDecrement}
-                                disabled={Number(nbrChildren) <= 0}
-                            >-</button>
-                            <input
-                                id="children"
-                                type="text"
-                                min={0}
-                                value={nbrChildren}
-                                onChange={handlePassagersChildsChange}
-                                className="w-12 h-8 text-center border border-gray-300 rounded-lg bg-white text-gray-900 font-semibold focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                            />
-                            <button
-                                type="button"
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-xl font-bold text-gray-700 hover:bg-blue-100 transition"
-                                onClick={handleChildrenIncrement}
-                            >+</button>
-                        </div>
-                    </div>
                 </div>
 
-
-                <button
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-12 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed mt-4 md:mt-0"
-                    onClick={handleSearch}
-                    disabled={isLoading || !isFormValid()}
-                >
-                    {isLoading ? (
-                        <div className="flex items-center space-x-2">
-                            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span>Searching...</span>
-                        </div>
-                    ) : (
-                        'Search Flights'
-                    )}
-                </button>
-
+                {/* Search Button */}
+                <div className="bg-blue-600 hover:bg-blue-700 transition-colors">
+                    <button
+                        className="h-full px-8 py-4 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+                        onClick={handleSearch}
+                        disabled={isLoading || !isFormValid()}
+                    >
+                        {isLoading ? (
+                            <div className="flex items-center space-x-2">
+                                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Searching...</span>
+                            </div>
+                        ) : (
+                            'Search'
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     );

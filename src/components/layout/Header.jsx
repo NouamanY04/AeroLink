@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bell, Search } from 'lucide-react';
+import { supabase } from '../../services/supabaseClient';
 
-const Header = ({ activeSection }) => {
+
+const Header = ({ activeSection, avatarColor, avatarInitial }) => {
+
     const getSectionTitle = (section) => {
         const titles = {
             dashboard: 'Dashboard',
-            flights: 'My Flights',
-            wishlist: 'Wishlist',
             profile: 'Profile Settings',
-            payment: 'Payment Methods',
-            support: 'Support & Help'
         };
         return titles[section] || 'Dashboard';
     };
@@ -32,16 +31,6 @@ const Header = ({ activeSection }) => {
 
                 {/* Header Actions */}
                 <div className="flex items-center space-x-2">
-                    {/* Search */}
-                    <div className="hidden md:flex relative">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3" />
-                        <input
-                            type="text"
-                            placeholder="Search flights, bookings..."
-                            className="pl-7 pr-2 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-40 text-xs"
-                        />
-                    </div>
-
                     {/* Notifications */}
                     <button className="relative p-1 text-gray-400 hover:text-gray-600 transition-colors">
                         <Bell className="h-4 w-4" />
@@ -50,8 +39,8 @@ const Header = ({ activeSection }) => {
 
 
                     {/* User Avatar */}
-                    <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                        JD
+                    <div className={`w-6 h-6 bg-gradient-to-r ${avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-xs`}>
+                        {avatarInitial}
                     </div>
                 </div>
             </div>

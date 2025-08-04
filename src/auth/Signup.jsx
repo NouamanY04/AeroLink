@@ -5,7 +5,8 @@ import Footer from '../components/layout/Footer'
 import { Icon } from "@iconify/react";
 import { Link } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { createUser } from '../services/UserService';
+import { registerUser } from '../services/RegisterService';
+
 
 const Signup = () => {
   const [user, setUser] = useState({ username: '', email: '', password: '' });
@@ -36,8 +37,25 @@ const Signup = () => {
     setLoading(true);
     setError('');
 
+    // 1. Try registering in Laravel backend first
     try {
-      // 1. Sign up with Supabase
+      await registerUser({
+        name: user.username,
+        email: user.email,
+        password: user.password
+      });
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+        error.message ||
+        'Registration failed. Please try again.'
+      );
+      setLoading(false);
+      return; // Stop the process if backend registration fails
+    }
+
+    try {
+      // 2. Sign up with Supabase
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: user.email,
         password: user.password,
@@ -50,7 +68,7 @@ const Signup = () => {
 
       if (authError) throw authError;
 
-      // 2. Store in Supabase profiles
+      // 3. Store in Supabase profiles
       const { error: profileError } = await supabase
         .from('profiles')
         .insert([
@@ -63,25 +81,12 @@ const Signup = () => {
 
       if (profileError) throw profileError;
 
-      // 3. Store in Laravel backend
-      await createUser({
-        name: user.username,
-        email: user.email,
-        password: user.password
-      });
-
       // Success - redirect to login
       navigate('/login');
 
     } catch (error) {
-      // Cleanup if Laravel registration fails
-      if (error.response) {
-        const { data: authUser } = await supabase.auth.getUser();
-        if (authUser?.user) {
-          await supabase.auth.admin.deleteUser(authUser.user.id);
-        }
-      }
       setError(error.message);
+      // Optionally: cleanup in backend if needed
     } finally {
       setLoading(false);
     }

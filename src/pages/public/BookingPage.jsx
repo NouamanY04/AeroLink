@@ -11,7 +11,9 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import TicketDocument from '../../components/bookings/TicketDocument';
 import { storeClientReservation } from '../../services/BookingService';
-
+import { AddClient } from '../../services/ClientService';
+import { storeClientPaymentInfo } from '../../services/PaymentService'
+import { updateBookingWithPaymentId } from '../../services/BookingService';
 
 const Reservation = () => {
   const [paymentmethod, setPaymentMethod] = useState('creditCard');
@@ -20,6 +22,7 @@ const Reservation = () => {
   const flightid = useParams();
   const flights = useSelector(state => state.flights.flights)
   const flightwanted = flights.find(flights => flights.id == flightid.id);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -28,13 +31,14 @@ const Reservation = () => {
     email: localStorage.getItem('userLoggedEmail') || '',
     phone: '',
     country: '',
-    city: ''
+    city: '',
+    passport_number: ''
   })
 
   const HandleInfoSubmit = (e) => {
     e.preventDefault();
 
-    const requiredFields = ['phone', 'country', 'city'];
+    const requiredFields = ['phone', 'country', 'city', 'passport_number'];
     const allFieldsFilled = requiredFields.every(field => clientInfo[field]?.trim());
 
     if (allFieldsFilled) {
@@ -45,39 +49,66 @@ const Reservation = () => {
   }
 
   const handlePaymentMethod = (method) => {
-    console.log(method)
     setPaymentMethod(method);
   }
 
-  const handlePaymentSubmit = async (paymentData) => {
-    try {
-      const bookingData = {
-        ...clientInfo,
-        ...paymentData,
-        payment_method: paymentmethod == 'creditCard' ? 'credit_card' : 'paypal',
-        flight_id: flightwanted.id,
-        price: flightwanted.price,
-        departure_place: flightwanted.departure_place,
-        arrival_place: flightwanted.arrival_place,
+  const getRandomSeatNumber = (flightNumber) => {
+    console.log(`Generating random seat for flight: ${flightNumber}`);
 
+    const seatNumbers = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B', '7A', '7B', '8A', '8B', '9A', '9B', '10A', '10B'];
+    const randomIndex = Math.floor(Math.random() * seatNumbers.length);
+    return `${flightNumber}-${seatNumbers[randomIndex]}`;
+  }
+  const handlePaymentSubmit = async (paymentData) => {
+    setLoading(true);
+    try {
+      const now = new Date();
+      const pad = (n) => n.toString().padStart(2, '0');
+      const bookingDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+      const bookingData = {
+        flight_id: flightwanted.id,
+        client_email: clientInfo.email,
+        seat_number: getRandomSeatNumber(flightwanted.flight_number),
+        booking_status: 'booked',
+        booking_date: bookingDate,
+        ...paymentData,
       };
 
-      const response = await storeClientReservation(bookingData);
+      const clientResponse = await AddClient(clientInfo);
+      (clientResponse && clientResponse.id) && console.log('✅ Client added successfully.');
 
-      if (response) {
-        setCurrentStep(3);
-        alert('Booking successful!');
 
-        const pdfLink = document.querySelector('[download]');
-        if (pdfLink) {
-          pdfLink.click();
-        }
-      }
+      const Bookingresponse = await storeClientReservation(bookingData);
+      (Bookingresponse && Bookingresponse.id) && console.log('✅ Booking stored successfully.');
+      const BookingId = Bookingresponse.id;
+
+
+      const paymentResponse = await storeClientPaymentInfo({
+        BookingId: BookingId,
+        ...paymentData,
+        payment_status: 'completed',
+      });
+      (paymentResponse && paymentResponse.id) && console.log('✅ Payment stored successfully.');
+      const paymentId = paymentResponse.id;
+
+
+      const updateResponse = await updateBookingWithPaymentId(BookingId, paymentId);
+      (updateResponse) && console.log('✅ Booking updated with payment ID.');
+
     } catch (error) {
       alert(error.message || 'Failed to process booking');
       console.error('Booking error:', error);
+    } finally {
+      setLoading(false);
+      setCurrentStep(3);
+      const pdfLink = document.querySelector('[download]');
+      if (pdfLink) {
+        pdfLink.click();
+      }
     }
   };
+
 
   const goToPreviousStep = () => {
     setCurrentStep(currentStep - 1);
@@ -97,28 +128,14 @@ const Reservation = () => {
     </div>
   );
 
-  // Function to render the progress indicator
-  const renderProgressIndicator = () => {
-    return (
-      <div id="steps" className='flex flex-row justify-around pt-5 pb-7'>
-        <div className='flex flex-col items-center gap-1'>
-          <div className={`w-16 h-16 ${currentStep >= 1 ? 'bg-blue-800 text-white' : 'bg-white border border-gray-600 text-black'} rounded-full text-lg font-semibold flex items-center justify-center`}>1</div>
-          <p className={`text-xl ${currentStep >= 1 ? 'text-blue-800' : ''}`}>Customer Information</p>
-        </div>
-        <div className='flex flex-col items-center gap-1'>
-          <div className={`w-16 h-16 ${currentStep >= 2 ? 'bg-blue-800 text-white' : 'bg-white border border-gray-600 text-black'} rounded-full text-lg font-semibold flex items-center justify-center`}>2</div>
-          <p className={`text-xl ${currentStep >= 2 ? 'text-blue-800' : ''}`}>Payment Informations</p>
-        </div>
-        <div className='flex flex-col items-center gap-1'>
-          <div className={`w-16 h-16 ${currentStep >= 3 ? 'bg-blue-800 text-white' : 'bg-white border border-gray-600 text-black'} rounded-full text-lg font-semibold flex items-center justify-center`}>3</div>
-          <p className={`text-xl ${currentStep >= 3 ? 'text-blue-800' : ''}`}>Booking is confirmed!</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+        </div>
+      )}
       <Navbar />
       <div className="max-w-5xl mx-auto px-3 py-4 sm:px-4 lg:px-6">
         <div className="flex flex-col lg:flex-row gap-4">
@@ -173,7 +190,8 @@ const Reservation = () => {
                     {[
                       { name: "phone", label: "Phone", type: "tel" },
                       { name: "country", label: "Country", type: "text" },
-                      { name: "city", label: "City", type: "text" }
+                      { name: "city", label: "City", type: "text" },
+                      { name: "passport_number", label: "Passport Number", type: "text" }
                     ].map((field) => (
                       <div key={field.name}>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -305,7 +323,8 @@ const Reservation = () => {
                           { label: "Email", value: clientInfo.email },
                           { label: "Phone", value: clientInfo.phone },
                           { label: "City", value: clientInfo.city },
-                          { label: "Country", value: clientInfo.country }
+                          { label: "Country", value: clientInfo.country },
+                          { label: "Passport Number", value: clientInfo.passport_number }
                         ].map((field, index) => (
                           <div key={index} className="space-y-1">
                             <p className="text-xs font-medium text-gray-500">{field.label}</p>
@@ -378,7 +397,7 @@ const Reservation = () => {
 const FlightDetailsCard = ({ flight }) => (
   <div className="bg-white rounded-lg shadow-sm p-4">
     <div className="flex items-center justify-center mb-4">
-      <img src={`${flight.logo}`} alt={flight.airline} className="h-12 w-auto" />
+      <img src={`http://localhost:8000/storage/${flight.logo}`} alt={flight.airline} className="h-12 w-auto" />
     </div>
 
     <div className="space-y-4 text-sm">

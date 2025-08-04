@@ -375,7 +375,7 @@ function FlightsDisplay() {
                                                 <div className="flex items-center space-x-3 flex-shrink-0">
                                                     <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
                                                         <img
-                                                            src={flight.logo}
+                                                            src={`http://localhost:8000/storage/${flight.logo}`}
                                                             alt={flight.airline}
                                                             className='w-8 h-8 object-contain'
                                                         />

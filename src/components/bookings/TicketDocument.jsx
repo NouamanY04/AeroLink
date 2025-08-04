@@ -39,59 +39,64 @@ const styles = StyleSheet.create({
 const TicketDocument = ({ clientInfo, flight }) => {
     return (
         <Document>
-        <Page size="A4" style={styles.page}>
-            <Text style={styles.header}>EasyFly Ticket</Text>
+            <Page size="A4" style={styles.page}>
+                <Text style={styles.header}>EasyFly Ticket</Text>
 
-            <View style={styles.section}>
-                <Text style={styles.title}>Passenger Information</Text>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Name:</Text>
-                    <Text style={styles.value}>{`${clientInfo.name} `}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Email:</Text>
-                    <Text style={styles.value}>{clientInfo.email}</Text>
-                </View>
-            </View>
+                <View style={styles.section}>
+                    <Text style={styles.title}>Passenger Information</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Name:</Text>
+                        <Text style={styles.value}>{`${clientInfo.name} `}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Email:</Text>
+                        <Text style={styles.value}>{clientInfo.email}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Passport Number:</Text>
+                        <Text style={styles.value}>{clientInfo.passport_number}</Text>
+                    </View>
 
-            <View style={styles.section}>
-                <Text style={styles.title}>Flight Details</Text>
-                <View style={styles.row}>
-                    <Text style={styles.label}>From:</Text>
-                    <Text style={styles.value}>{flight.departure_place}</Text>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>To:</Text>
-                    <Text style={styles.value}>{flight.arrival_place}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Departure Time:</Text>
-                    <Text style={styles.value}>{flight.heure_depart}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Arrival Time:</Text>
-                    <Text style={styles.value}>{flight.heure_arrive}</Text>
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Duration:</Text>
-                    <Text style={styles.value}>{`${flight.duration.hours}h ${flight.duration.minutes}m`}</Text>
-                </View>
-            </View>
 
-            <View style={styles.section}>
-                <Text style={styles.title}>Payment Details</Text>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Total Amount:</Text>
-                    <Text style={styles.value}>{`${flight.price} $`}</Text>
+                <View style={styles.section}>
+                    <Text style={styles.title}>Flight Details</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>From:</Text>
+                        <Text style={styles.value}>{flight.departure_place}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>To:</Text>
+                        <Text style={styles.value}>{flight.arrival_place}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Departure Time:</Text>
+                        <Text style={styles.value}>{flight.heure_depart}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Arrival Time:</Text>
+                        <Text style={styles.value}>{flight.heure_arrive}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Duration:</Text>
+                        <Text style={styles.value}>{`${flight.duration.hours}h ${flight.duration.minutes}m`}</Text>
+                    </View>
                 </View>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Booking Reference:</Text>
-                    <Text style={styles.value}>{`EF-${Math.floor(Math.random() * 10000)}-${Math.floor(Math.random() * 1000)}`}</Text>
+
+                <View style={styles.section}>
+                    <Text style={styles.title}>Payment Details</Text>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Total Amount:</Text>
+                        <Text style={styles.value}>{`${flight.price} $`}</Text>
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label}>Booking Reference:</Text>
+                        <Text style={styles.value}>{`EF-${Math.floor(Math.random() * 10000)}-${Math.floor(Math.random() * 1000)}`}</Text>
+                    </View>
                 </View>
-            </View>
-        </Page>
-    </Document>
-        
+            </Page>
+        </Document>
+
     );
 }
 

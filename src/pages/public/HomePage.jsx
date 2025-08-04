@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {setInfoTrip } from '../../store/reducers/actions';
+import { setInfoTrip } from '../../store/reducers/actions';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import SearchForm from '../../components/flights/SearchForm';
@@ -83,7 +83,7 @@ function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <header className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white py-20 text-center relative overflow-hidden">
+      <header className="bg-blue-950 text-white py-20 text-center relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -97,12 +97,9 @@ function Home() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <h1 className="text-5xl md:text-5xl font-extrabold leading-tight mb-4 animate-fade-in-up">
+          <h1 className="text-5xl md:text-3xl font-extrabold leading-tight mb-4 animate-fade-in-up">
             Your Gateway to the Skies — Fast, Easy, Reliable
           </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Find the best flights at unbeatable prices
-          </p>
           <SearchForm />
         </div>
       </header>
@@ -138,7 +135,7 @@ function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-blue-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
@@ -148,7 +145,7 @@ function Home() {
 
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-blue-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -158,7 +155,7 @@ function Home() {
 
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-blue-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75A9.75 9.75 0 0012 2.25z" />
                 </svg>
               </div>

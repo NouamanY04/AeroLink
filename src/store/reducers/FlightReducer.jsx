@@ -3,8 +3,6 @@ const initialState = {
     flights: [], // Start with empty array - will be populated from API
     infoTrip: {
         type: 'oneWay',
-        nbrAdults: 1,
-        nbrChildren: 0,
         from: '',
         to: '',
         date_depart: '',

@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Home, Plane, Heart, User, CreditCard, HelpCircle, LogOut, Menu, X, Bell } from 'lucide-react';
+import { getStableAvatarColor } from '../../utils/Avatar';
 
-const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobileMenuOpen }) => {
+const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobileMenuOpen, avatarColor, avatarInitial }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', icon: Home },
-        { id: 'flights', label: 'My Flights', icon: Plane },
-        { id: 'wishlist', label: 'Wishlist', icon: Heart },
         { id: 'profile', label: 'Profile', icon: User },
-        { id: 'payment', label: 'Payment', icon: CreditCard },
-        { id: 'support', label: 'Support', icon: HelpCircle },
     ];
+
+    const [userName, setUserName] = useState('User');
+    const [userEmail, setUserEmail] = useState('');
+
+
+    useEffect(() => {
+        const updateUserInfo = () => {
+            const username = localStorage.getItem('userLoggedName') || '';
+            const email = localStorage.getItem('userLoggedEmail') || '';
+            setUserName(username || 'User');
+            setUserEmail(email);
+        };
+        updateUserInfo();
+        window.addEventListener('userInfoUpdated', updateUserInfo);
+        return () => window.removeEventListener('userInfoUpdated', updateUserInfo);
+    }, []);
 
     const handleMenuClick = (sectionId) => {
         setActiveSection(sectionId);
@@ -70,12 +83,12 @@ const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobil
                                     key={item.id}
                                     onClick={() => handleMenuClick(item.id)}
                                     className={`
-                                w-full flex items-center px-2 py-1 text-left rounded-lg transition-all duration-200 text-xs
-                                ${isActive
+                                        w-full flex items-center px-2 py-1 text-left rounded-lg transition-all duration-200 text-xs
+                                        ${isActive
                                             ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
                                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }
-                            `}
+                                    `}
                                 >
                                     <Icon className={`h-3 w-3 mr-2 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
                                     <span className="font-normal">{item.label}</span>
@@ -88,12 +101,12 @@ const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobil
                 {/* User Section at Bottom */}
                 <div className="px-2 py-2 border-t border-gray-200">
                     <div className="flex items-center space-x-2 mb-3">
-                        <div className="w-7 h-7 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xs">
-                            JD
+                        <div className={`w-7 h-7 bg-gradient-to-r ${avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-xs`}>
+                            {avatarInitial}
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-gray-900">John Doe</p>
-                            <p className="text-[10px] text-gray-500">Premium Member</p>
+                            <p className="text-xs font-medium text-gray-900">{userName}</p>
+                            <p className="text-[10px] text-gray-500">{userEmail}</p>
                         </div>
                     </div>
 

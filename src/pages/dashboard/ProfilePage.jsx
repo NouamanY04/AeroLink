@@ -1,62 +1,181 @@
-import React, { useState } from 'react';
-import { User, Mail, Phone, Lock, Globe, Utensils, Armchair, Save, Camera, Edit3 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Mail, Phone, Lock, Globe, Utensils, Armchair, Save, Camera, Edit3, Eye, EyeOff } from 'lucide-react';
+import { getClientInfo, UpdateClient, ChangePassword } from '../../services/ClientService';
+import { supabase } from '../../services/supabaseClient';
 
-const ProfileSettings = () => {
+const ProfileSettings = ({ onContentLoaded, avatarColor, avatarInitial }) => {
   const [activeTab, setActiveTab] = useState('personal');
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1990-05-15',
-    nationality: 'United States',
-    passportNumber: 'US123456789'
+    FullName: '',
+    email: '',
+    phone: '',
+    country: '',
+    city: '',
+    passportNumber: ''
   });
 
-  const [travelPreferences, setTravelPreferences] = useState({
-    seatPreference: 'aisle',
-    mealPreference: 'vegetarian',
-    language: 'english',
-    currency: 'usd',
-  });
-
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', icon: User },
     { id: 'security', label: 'Security', icon: Lock }
   ];
 
+  const handleGetClientInfo = async () => {
+    try {
+      // Try to get cached user info
+      const cachedUser = localStorage.getItem('cachedUserInfo');
+      if (cachedUser) {
+        const userData = JSON.parse(cachedUser);
+        setPersonalInfo({
+          FullName: userData.name || '',
+          email: userData.email || '',
+          phone: userData.phone || '',
+          country: userData.country || '',
+          city: userData.city || '',
+          passportNumber: userData.passport_number || ''
+        });
+        return; // Skip API call if cache exists
+      }
+
+      // Otherwise, fetch from API
+      const username = localStorage.getItem('userLoggedName');
+      if (!username) return;
+      const response = await getClientInfo(username);
+      const userData = response.data && response.data.length > 0 ? response.data[0] : {};
+      setPersonalInfo({
+        FullName: userData.name || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+        country: userData.country || '',
+        city: userData.city || '',
+        passportNumber: userData.passport_number || ''
+      });
+      // Cache the user info for future use
+      localStorage.setItem('cachedUserInfo', JSON.stringify(userData));
+    } catch (error) {
+      // Handle error if needed
+    }
+  };
+
+  // Only call API once when content is loaded
+  useEffect(() => {
+    if (onContentLoaded) {
+      handleGetClientInfo();
+    }
+    // eslint-disable-next-line
+  }, [onContentLoaded]);
+
   const handlePersonalInfoChange = (field, value) => {
     setPersonalInfo(prev => ({ ...prev, [field]: value }));
   };
 
-  const handlePreferenceChange = (field, value) => {
-    setTravelPreferences(prev => ({ ...prev, [field]: value }));
+  const handlePasswordChange = async () => {
+    setPasswordMessage('');
+    setPasswordError('');
+    try {
+      const username = localStorage.getItem('userLoggedName');
+      const userId = localStorage.getItem('userLoggedId');
+      if (!username || !userId) return;
+
+      // Change password in Laravel API
+      const result = await ChangePassword(username, {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        newPasswordConfirmation: passwordData.confirmPassword
+      });
+
+      // Change password in Supabase
+      const { error: supabaseError } = await supabase.auth.updateUser({
+        password: passwordData.newPassword
+      });
+
+
+      // Handle messages
+      if (result && result.message && !supabaseError) {
+        setPasswordMessage('Password updated successfully!');
+      } else if (result && result.message && supabaseError) {
+        setPasswordMessage(result.message);
+        setPasswordError('Supabase password update failed: ' + supabaseError.message);
+      } else if (supabaseError) {
+        setPasswordError('Supabase password update failed: ' + supabaseError.message);
+      } else {
+        setPasswordMessage('Password updated successfully!');
+      }
+    } catch (error) {
+      setPasswordError(error.message || 'Password change failed!');
+    }
   };
 
-  const handleNotificationChange = (type, value) => {
-    setTravelPreferences(prev => ({
-      ...prev,
-      notifications: { ...prev.notifications, [type]: value }
-    }));
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSuccessMessage('');
+    try {
+      const userId = localStorage.getItem('userLoggedId'); // Make sure you store user id in localStorage
+      const username = localStorage.getItem('userLoggedName');
+      if (!username || !userId) return;
+      const updatedData = {
+        name: personalInfo.FullName,
+        email: personalInfo.email,
+        phone: personalInfo.phone,
+        country: personalInfo.country,
+        city: personalInfo.city,
+        passport_number: personalInfo.passportNumber
+      };
+      const result = await UpdateClient(username, updatedData);
+      if (result.data) {
+        localStorage.setItem('cachedUserInfo', JSON.stringify(result.data));
+        localStorage.setItem('userLoggedName', result.data.name || '');
+        localStorage.setItem('userLoggedEmail', result.data.email || '');
+        window.dispatchEvent(new Event('userInfoUpdated'));
+        setSuccessMessage('Profile updated successfully!');
+
+        // Update username in Supabase
+        const { error } = await supabase
+          .from('profiles')
+          .update({ username: result.data.name })
+          .eq('id', userId);
+
+        if (error) {
+          console.error('Supabase username update failed:', error.message);
+        }
+      }
+    } catch (error) {
+      console.error('Update failed:', error);
+    }
+    setIsSaving(false);
   };
 
-  const handlePasswordChange = (field, value) => {
-    setPasswordData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = () => {
-    // Handle save logic here
-    console.log('Saving profile data...');
-  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      {successMessage && (
+        <div className="mx-4 mt-4 mb-2 px-4 py-2 rounded bg-green-100 text-green-800 text-xs font-medium border border-green-300">
+          {successMessage}
+        </div>
+      )}
+      {/* Password Success/Error Message */}
+      {passwordMessage && (
+        <div className="mx-4 mt-2 mb-2 px-4 py-2 rounded bg-green-100 text-green-800 text-xs font-medium border border-green-300">
+          {passwordMessage}
+        </div>
+      )}
+      {passwordError && (
+        <div className="mx-4 mt-2 mb-2 px-4 py-2 rounded bg-red-100 text-red-800 text-xs font-medium border border-red-300">
+          {passwordError}
+        </div>
+      )}
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <h3 className="text-base font-semibold text-gray-900">Profile Settings</h3>
@@ -92,40 +211,25 @@ const ProfileSettings = () => {
             {/* Profile Picture */}
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  JD
+                <div className={`w-14 h-14 bg-gradient-to-r ${avatarColor} rounded-full flex items-center justify-center text-white text-xl font-bold`}>
+                  {avatarInitial}
                 </div>
                 <button className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-0.5 shadow-sm hover:bg-gray-50 transition-colors">
                   <Camera className="h-3 w-3 text-gray-600" />
                 </button>
               </div>
               <div>
-                <h4 className="text-base font-medium text-gray-900">Profile Picture</h4>
-                <p className="text-xs text-gray-500">Update your profile picture</p>
-                <button className="mt-1 text-blue-600 hover:text-blue-700 text-xs font-medium">
-                  Change Picture
-                </button>
               </div>
             </div>
 
-            {/* Personal Information Form */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">First Name</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
                 <input
                   type="text"
-                  value={personalInfo.firstName}
-                  onChange={(e) => handlePersonalInfoChange('firstName', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
-                <input
-                  type="text"
-                  value={personalInfo.lastName}
-                  onChange={(e) => handlePersonalInfoChange('lastName', e.target.value)}
+                  value={personalInfo.FullName}
+                  onChange={(e) => handlePersonalInfoChange('FullName', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -135,8 +239,9 @@ const ProfileSettings = () => {
                 <input
                   type="email"
                   value={personalInfo.email}
+                  readOnly
                   onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-200 bg-gray-100 text-gray-400 rounded-lg px-2 py-1 text-xs cursor-not-allowed"
                 />
               </div>
 
@@ -151,32 +256,26 @@ const ProfileSettings = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Date of Birth</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
                 <input
-                  type="date"
-                  value={personalInfo.dateOfBirth}
-                  onChange={(e) => handlePersonalInfoChange('dateOfBirth', e.target.value)}
+                  type="text"
+                  value={personalInfo.country}
+                  onChange={(e) => handlePersonalInfoChange('country', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Nationality</label>
-                <select
-                  value={personalInfo.nationality}
-                  onChange={(e) => handlePersonalInfoChange('nationality', e.target.value)}
+                <label className="block text-xs font-medium text-gray-700 mb-1">City</label>
+                <input
+                  type="text"
+                  value={personalInfo.city}
+                  onChange={(e) => handlePersonalInfoChange('city', e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="United States">United States</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                  <option value="Canada">Canada</option>
-                  <option value="Australia">Australia</option>
-                  <option value="Germany">Germany</option>
-                  <option value="France">France</option>
-                </select>
+                />
               </div>
 
-              <div className="md:col-span-2">
+              <div >
                 <label className="block text-xs font-medium text-gray-700 mb-1">Passport Number</label>
                 <input
                   type="text"
@@ -195,55 +294,69 @@ const ProfileSettings = () => {
             <div>
               <h4 className="text-base font-medium text-gray-900 mb-2">Change Password</h4>
               <div className="space-y-2 max-w-xs">
-                <div>
+                {/* Current Password */}
+                <div className="relative">
                   <label className="block text-xs font-medium text-gray-700 mb-1">Current Password</label>
                   <input
-                    type="password"
+                    type={showCurrentPwd ? "text" : "password"}
                     value={passwordData.currentPassword}
-                    onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-6 text-gray-500"
+                    onClick={() => setShowCurrentPwd((v) => !v)}
+                    tabIndex={-1}
+                  >
+                    {showCurrentPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
-
-                <div>
+                {/* New Password */}
+                <div className="relative">
                   <label className="block text-xs font-medium text-gray-700 mb-1">New Password</label>
                   <input
-                    type="password"
+                    type={showNewPwd ? "text" : "password"}
                     value={passwordData.newPassword}
-                    onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-6 text-gray-500"
+                    onClick={() => setShowNewPwd((v) => !v)}
+                    tabIndex={-1}
+                  >
+                    {showNewPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
-
-                <div>
+                {/* Confirm New Password */}
+                <div className="relative">
                   <label className="block text-xs font-medium text-gray-700 mb-1">Confirm New Password</label>
                   <input
-                    type="password"
+                    type={showConfirmPwd ? "text" : "password"}
                     value={passwordData.confirmPassword}
-                    onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-6 text-gray-500"
+                    onClick={() => setShowConfirmPwd((v) => !v)}
+                    tabIndex={-1}
+                  >
+                    {showConfirmPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
-
-                <button className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-xs">
+                <button
+                  onClick={handlePasswordChange}
+                  className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-xs"
+                >
                   Update Password
                 </button>
               </div>
             </div>
 
-            {/* Account Deletion */}
-            <div className="border-t border-gray-200 pt-4">
-              <h4 className="text-base font-medium text-gray-900 mb-2">Danger Zone</h4>
-              <div className="border border-red-200 rounded-lg p-2 bg-red-50">
-                <h5 className="text-xs font-medium text-red-900 mb-1">Delete Account</h5>
-                <p className="text-[10px] text-red-700 mb-2">
-                  Once you delete your account, there is no going back. Please be certain.
-                </p>
-                <button className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-colors text-xs">
-                  Delete Account
-                </button>
-              </div>
-            </div>
           </div>
         )}
 
@@ -251,10 +364,11 @@ const ProfileSettings = () => {
         <div className="flex justify-end pt-4 border-t border-gray-200 mt-6">
           <button
             onClick={handleSave}
+            disabled={isSaving}
             className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-xs"
           >
             <Save className="h-3 w-3" />
-            <span>Save Changes</span>
+            <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>
       </div>

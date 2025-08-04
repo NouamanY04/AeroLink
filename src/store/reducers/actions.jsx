@@ -19,6 +19,7 @@ const store_data_flights = (data, type) => {
         newData = data.map((item) => {
             return {
                 id: item.id,
+                flight_number: item.flight_number,
                 airline: item.airline.name,
                 logo: item.airline.image || "../error_image_logo.png",
                 heure_depart: new Date(item.departure_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -59,6 +60,7 @@ const addFlight = (flightData) => {
         payload: flightData
     };
 };
+
 
 export {
     setInfoTrip,

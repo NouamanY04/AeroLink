@@ -1,14 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabaseClient';
+import { getStableAvatarColor } from '../../utils/Avatar';
+
+// Array of gradient colors for avatar
+const avatarColors = [
+  'from-blue-500 to-blue-600',
+  'from-red-500 to-red-600',
+  'from-yellow-400 to-yellow-500',
+  'from-green-500 to-green-600',
+  'from-purple-500 to-purple-600',
+  'from-pink-500 to-pink-600',
+  'from-teal-500 to-teal-600',
+  'from-indigo-500 to-indigo-600'
+];
+
+// Get initials from username (first letter of each word, max 2)
+function getInitials(name) {
+  if (!name) return 'U';
+  const parts = name.trim().split(' ');
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
 
 function Navbar() {
   const [user, setUser] = useState(null);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Add this line
-  const [showMobileMenu, setShowMobileMenu] = useState(false); // NEW
+  const [isLoading, setIsLoading] = useState(true);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [avatarColor, setAvatarColor] = useState(avatarColors[Math.floor(Math.random() * avatarColors.length)]);
+  const [avatarInitial, setAvatarInitial] = useState('U');
   const navigate = useNavigate();
-
 
   useEffect(() => {
     // Check auth status
@@ -17,32 +39,30 @@ function Navbar() {
       if (userId) {
         await fetchUserProfile(userId);
       }
-      setIsLoading(false); // Set loading to false after check
+      setIsLoading(false);
     };
 
     checkAuth();
 
-
-    // Logo animation
-    const addAnimationEffect = () => {
-      const element = document.getElementById("hiddenElement");
-      if (element) element.classList.add("animate-fadeIn");
+    // Listen for user info updates
+    const updateAvatar = () => {
+      const username = localStorage.getItem('userLoggedName') || '';
+      setAvatarInitial(getInitials(username));
+      setAvatarColor(getStableAvatarColor(username));
+      setUser({ username });
     };
-    const movingElement = document.getElementById("movingElement");
-    if (movingElement) {
-      movingElement.addEventListener("animationend", addAnimationEffect);
-    }
-
-    return () => {
-      ;
-    };
+    updateAvatar();
+    window.addEventListener('userInfoUpdated', updateAvatar);
+    return () => window.removeEventListener('userInfoUpdated', updateAvatar);
   }, []);
 
   const fetchUserProfile = async (userId) => {
     try {
-      const username = localStorage.getItem('username');
+      const username = localStorage.getItem('userLoggedName');
       if (username) {
         setUser({ username });
+        setAvatarInitial(getInitials(username));
+        setAvatarColor(avatarColors[Math.floor(Math.random() * avatarColors.length)]);
         return;
       }
 
@@ -55,11 +75,12 @@ function Navbar() {
       if (error) throw error;
 
       setUser(data);
+      setAvatarInitial(getInitials(data.username));
+      setAvatarColor(avatarColors[Math.floor(Math.random() * avatarColors.length)]);
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
   };
-
 
   const handleLogout = async () => {
     try {
@@ -71,7 +92,6 @@ function Navbar() {
       console.error('Error logging out:', error);
     }
   };
-
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -114,8 +134,8 @@ function Navbar() {
                   className="flex items-center space-x-2 focus:outline-none"
                   onClick={() => setShowUserDropdown(!showUserDropdown)}
                 >
-                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">
-                    {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                  <div className={`w-8 h-8 bg-gradient-to-r ${avatarColor} text-white rounded-full flex items-center justify-center font-bold`}>
+                    {avatarInitial}
                   </div>
                   <span className="text-gray-700">{user.username || 'User'}</span>
                 </button>
@@ -140,14 +160,9 @@ function Navbar() {
               </div>
             ) : (
               <Link to={'/login'} className="hidden md:flex items-center space-x-2">
-                {user ? <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-gray-700">L</span>
-                </div>
-                  : ''}
                 <span className="text-gray-700">Login</span>
               </Link>
             )}
-
 
             {/* Mobile menu button */}
             <button

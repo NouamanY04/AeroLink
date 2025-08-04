@@ -49,7 +49,7 @@ const Login = () => {
         const username = profileData?.username || data.user.email.split('@')[0];
         localStorage.setItem('userLoggedId', data.user.id);
         localStorage.setItem('userLoggedEmail', data.user.email);
-        localStorage.setItem('username', username);
+        localStorage.setItem('userLoggedName', username);
         navigate('/');
       }
     } catch (error) {
