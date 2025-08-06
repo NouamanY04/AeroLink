@@ -1,195 +1,194 @@
-import React from 'react';
-import { Plane, Clock, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Plane, Clock, MapPin, Calendar, ArrowRight, ExternalLink } from 'lucide-react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import TicketDocument from '../bookings/TicketDocument';
+import { getUpcomingFlights } from '../../services/ClientService';
 
 const UpcomingFlights = () => {
-    const upcomingFlights = [
-        {
-            id: 1,
-            flightNumber: 'EF 1234',
-            airline: 'Emirates',
-            from: 'New York',
-            to: 'London',
-            fromCode: 'JFK',
-            toCode: 'LHR',
-            departureDate: '2024-03-15',
-            departureTime: '14:30',
-            arrivalDate: '2024-03-16',
-            arrivalTime: '02:45',
-            duration: '7h 15m',
-            class: 'Business',
-            gate: 'A12',
-            status: 'On Time',
-            logo: '🇦🇪'
-        },
-        {
-            id: 2,
-            flightNumber: 'EF 5678',
-            airline: 'Lufthansa',
-            from: 'London',
-            to: 'Tokyo',
-            fromCode: 'LHR',
-            toCode: 'NRT',
-            departureDate: '2024-03-20',
-            departureTime: '10:15',
-            arrivalDate: '2024-03-21',
-            arrivalTime: '06:30',
-            duration: '11h 15m',
-            class: 'Economy',
-            gate: 'B7',
-            status: 'Delayed',
-            logo: '🇩🇪'
-        },
-        {
-            id: 3,
-            flightNumber: 'EF 9012',
-            airline: 'Air France',
-            from: 'Tokyo',
-            to: 'Paris',
-            fromCode: 'NRT',
-            toCode: 'CDG',
-            departureDate: '2024-03-25',
-            departureTime: '16:45',
-            arrivalDate: '2024-03-25',
-            arrivalTime: '21:30',
-            duration: '12h 45m',
-            class: 'First',
-            gate: 'C15',
-            status: 'Boarding',
-            logo: '🇫🇷'
-        }
-    ];
+    const [flights, setFlights] = useState([]);
+    const [clientInfo, setClientInfo] = useState(null);
+    const [downloadedId, setDownloadedId] = useState(null);
 
     const getStatusColor = (status) => {
         switch (status) {
+            case 'scheduled':
             case 'On Time':
-                return 'bg-green-100 text-green-800';
+                return 'bg-emerald-100 text-emerald-800 border-emerald-200';
             case 'Delayed':
-                return 'bg-red-100 text-red-800';
+            case 'delayed':
+                return 'bg-red-100 text-red-800 border-red-200';
             case 'Boarding':
-                return 'bg-blue-100 text-blue-800';
+            case 'boarding':
+                return 'bg-blue-100 text-blue-800 border-blue-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-slate-100 text-slate-800 border-slate-200';
         }
     };
 
     const getFlightClassColor = (flightClass) => {
-        switch (flightClass) {
-            case 'First':
-                return 'bg-purple-100 text-purple-800';
-            case 'Business':
-                return 'bg-blue-100 text-blue-800';
-            case 'Economy':
-                return 'bg-gray-100 text-gray-800';
+        switch (flightClass?.toLowerCase()) {
+            case 'first':
+                return 'bg-purple-100 text-purple-800 border-purple-200';
+            case 'business':
+                return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'economy':
+                return 'bg-slate-100 text-slate-800 border-slate-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-slate-100 text-slate-800 border-slate-200';
         }
     };
 
+    useEffect(() => {
+        const fetchUpcomingFlights = async () => {
+            try {
+                const username = localStorage.getItem('userLoggedName');
+                if (username) {
+                    const response = await getUpcomingFlights(username);
+                    setFlights(response.data?.flights || []);
+                    setClientInfo(response.data?.client || null);
+                }
+            } catch (error) {
+                console.error('Error fetching upcoming flights:', error);
+            }
+        };
+
+        fetchUpcomingFlights();
+    }, []);
+
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-4 border-b border-gray-200">
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 overflow-hidden">
+            <div className="p-6 border-b border-slate-200/60 bg-gradient-to-r from-slate-50 to-blue-50/30">
                 <div className="flex items-center justify-between">
-                    <h3 className="text-base font-semibold text-gray-900">Upcoming Flights</h3>
-                    <button className="text-blue-600 hover:text-blue-700 text-xs font-medium">
-                        View All
-                    </button>
+                    <div>
+                        <h3 className="text-xl font-bold text-slate-800">Upcoming Flights</h3>
+                        <p className="text-slate-600 text-sm mt-1">Your next adventures await</p>
+                    </div>
                 </div>
             </div>
 
-            <div className="divide-y divide-gray-200">
-                {upcomingFlights.map((flight) => (
-                    <div key={flight.id} className="p-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-2 lg:space-y-0">
-                            {/* Flight Info */}
-                            <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-2">
-                                    <span className="text-lg">{flight.logo}</span>
-                                    <div>
-                                        <h4 className="font-semibold text-sm text-gray-900">{flight.airline}</h4>
-                                        <p className="text-xs text-gray-500">{flight.flightNumber}</p>
-                                    </div>
-                                    <div className="flex space-x-1">
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(flight.status)}`}>
-                                            {flight.status}
-                                        </span>
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getFlightClassColor(flight.class)}`}>
-                                            {flight.class}
-                                        </span>
-                                    </div>
-                                </div>
+            <div className="divide-y divide-slate-200/60">
+                {flights.length === 0 ? (
+                    <div className="p-6 text-center text-slate-500">No upcoming flights found.</div>
+                ) : (
+                    flights.map((item) => {
+                        const flight = item.flight;
+                        return (
+                            <div key={item.booking_id} className="p-6 hover:bg-slate-50/50 transition-all duration-200 group">
+                                <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
+                                    {/* Flight Info */}
+                                    <div className="flex-1">
+                                        <div className="flex items-center space-x-3 mb-4">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center">
+                                                {/* Airline logo or emoji, fallback to country flag */}
+                                                {flight.airline?.image ? (
+                                                    <img
+                                                        src={`http://localhost:8000/storage/${flight.airline.image}`}
+                                                        alt={flight.airline.name}
+                                                        className="w-10 h-10 object-contain rounded"
+                                                    />
+                                                ) : (
+                                                    <span className="text-2xl">{flight.airline?.country === 'Germany' ? '🇩🇪' : '✈️'}</span>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="font-bold text-slate-800 text-lg">{flight.airline?.name}</h4>
+                                                <p className="text-slate-500 text-sm">{flight.flight_number}</p>
+                                            </div>
+                                            <div className="flex space-x-2">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(flight.status)}`}>
+                                                    {flight.status}
+                                                </span>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getFlightClassColor(flight.class)}`}>
+                                                    {flight.class}
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                {/* Route */}
-                                <div className="flex items-center space-x-2 mb-2">
-                                    <div className="text-center">
-                                        <p className="text-base font-bold text-gray-900">{flight.departureTime}</p>
-                                        <p className="text-xs text-gray-500">{flight.fromCode}</p>
-                                        <p className="text-[10px] text-gray-400">{flight.from}</p>
-                                    </div>
+                                        {/* Route */}
+                                        <div className="flex items-center space-x-4 mb-4">
+                                            <div className="text-center">
+                                                <p className="text-2xl font-bold text-slate-800">
+                                                    {flight.departure_time?.slice(11, 16)}
+                                                </p>
+                                                <p className="text-sm font-semibold text-slate-600">{flight.departure_airport?.code}</p>
+                                                <p className="text-xs text-slate-500">{flight.departure_airport?.city}</p>
+                                            </div>
 
-                                    <div className="flex-1 flex items-center justify-center">
-                                        <div className="flex items-center space-x-1">
-                                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                            <div className="flex-1 h-px bg-gray-300"></div>
-                                            <Plane className="h-3 w-3 text-blue-500" />
-                                            <div className="flex-1 h-px bg-gray-300"></div>
-                                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                            <div className="flex-1 flex items-center justify-center">
+                                                <div className="flex items-center space-x-2 w-full max-w-xs">
+                                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                    <div className="flex-1 h-0.5 bg-gradient-to-r from-blue-500 to-blue-300"></div>
+                                                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                                        <Plane className="h-4 w-4 text-white" />
+                                                    </div>
+                                                    <div className="flex-1 h-0.5 bg-gradient-to-r from-blue-300 to-blue-500"></div>
+                                                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-center">
+                                                <p className="text-2xl font-bold text-slate-800">
+                                                    {flight.arrival_time?.slice(11, 16)}
+                                                </p>
+                                                <p className="text-sm font-semibold text-slate-600">{flight.arrival_airport?.code}</p>
+                                                <p className="text-xs text-slate-500">{flight.arrival_airport?.city}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Flight Details */}
+                                        <div className="flex items-center space-x-6 text-sm text-slate-600">
+                                            <div className="flex items-center space-x-2">
+                                                <Calendar className="h-4 w-4 text-slate-400" />
+                                                <span className="font-medium">{flight.departure_time?.slice(0, 10)}</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <MapPin className="h-4 w-4 text-slate-400" />
+                                                <span className="font-medium">{item.seat_number}</span>
+                                            </div>
+
                                         </div>
                                     </div>
 
-                                    <div className="text-center">
-                                        <p className="text-base font-bold text-gray-900">{flight.arrivalTime}</p>
-                                        <p className="text-xs text-gray-500">{flight.toCode}</p>
-                                        <p className="text-[10px] text-gray-400">{flight.to}</p>
-                                    </div>
-                                </div>
-
-                                {/* Flight Details */}
-                                <div className="flex items-center space-x-4 text-xs text-gray-500">
-                                    <div className="flex items-center space-x-1">
-                                        <Calendar className="h-3 w-3" />
-                                        <span>{flight.departureDate}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                        <Clock className="h-3 w-3" />
-                                        <span>{flight.duration}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                        <MapPin className="h-3 w-3" />
-                                        <span>Gate {flight.gate}</span>
+                                    {/* Action Button */}
+                                    <div className="lg:ml-6 flex flex-col items-end">
+                                        {clientInfo && (
+                                            <PDFDownloadLink
+                                                document={<TicketDocument clientInfo={clientInfo} flight={flight} />}
+                                                fileName={`AeroLink-ticket-${clientInfo.name}-${flight.flight_number}.pdf`}
+                                            >
+                                                {({ loading }) => (
+                                                    <button
+                                                        className={`px-4 py-2 text-xs font-medium rounded transition-colors duration-200
+                                                            ${downloadedId === item.booking_id
+                                                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                                            }`}
+                                                        onClick={() => !loading && setDownloadedId(item.booking_id)}
+                                                        disabled={loading}
+                                                    >
+                                                        {loading ? (
+                                                            'Generating...'
+                                                        ) : downloadedId === item.booking_id ? (
+                                                            <span className="flex items-center gap-2">
+                                                                <span className="w-4 h-4 bg-green-500 rounded-full inline-block"></span>
+                                                                Ticket Downloaded
+                                                            </span>
+                                                        ) : (
+                                                            <span className="flex items-center gap-2">
+                                                                <span className="w-4 h-4 bg-blue-500 rounded-full inline-block"></span>
+                                                                Download Ticket
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </PDFDownloadLink>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Actions */}
-                            <div className="flex flex-col space-y-1 lg:ml-4">
-                                <button className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-xs font-medium">
-                                    Check In
-                                </button>
-                                <button className="border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium">
-                                    View Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Quick Actions */}
-            <div className="p-4 bg-gray-50 border-t border-gray-200">
-                <div className="flex flex-wrap gap-2">
-                    <button className="flex items-center space-x-1 bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-xs">
-                        <Calendar className="h-3 w-3" />
-                        <span>Manage Bookings</span>
-                    </button>
-                    <button className="flex items-center space-x-1 bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-xs">
-                        <MapPin className="h-3 w-3" />
-                        <span>Flight Status</span>
-                    </button>
-                    <button className="flex items-center space-x-1 bg-white border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-xs">
-                        <Plane className="h-3 w-3" />
-                        <span>Seat Selection</span>
-                    </button>
-                </div>
+                        );
+                    })
+                )}
             </div>
         </div>
     );

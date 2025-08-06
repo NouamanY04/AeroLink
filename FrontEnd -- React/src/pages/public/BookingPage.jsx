@@ -27,7 +27,7 @@ const Reservation = () => {
   const dispatch = useDispatch();
 
   const [clientInfo, setClientInfo] = useState({
-    name: localStorage.getItem('username') || '',
+    name: localStorage.getItem('userLoggedName') || '',
     email: localStorage.getItem('userLoggedEmail') || '',
     phone: '',
     country: '',

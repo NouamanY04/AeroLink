@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\User;
+use App\Models\Booking;
+use App\Models\Flight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -160,32 +162,14 @@ class ClientApiController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Get flights for a specific username.
      */
-    public function destroy($id)
-    {
-        $client = Client::findOrFail($id);
-        $client->user->delete();
-        return response()->json(['message' => 'Client deleted']);
-    }
-
-    /**
-     * Change password for a client by username.
-     */
-    public function changePassword(Request $request, $username)
+    public function getFlightsByUsername($username)
     {
         // Find the user by username (name or email)
         $user = User::where('name', 'LIKE', "%{$username}%")
                     ->orWhere('email', 'LIKE', "%{$username}%")
                     ->first();
-
-        Log::info('User search debug', [
-            'search_username' => $username,
-            'user_found' => $user ? 'yes' : 'no',
-            'user_id' => $user ? $user->id : null,
-            'user_name' => $user ? $user->name : null,
-            'user_email' => $user ? $user->email : null
-        ]);
 
         if (!$user) {
             return response()->json([
@@ -204,41 +188,44 @@ class ClientApiController extends Controller
             ], 404);
         }
 
-        $validated = $request->validate([
-            'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
-            'new_password_confirmation' => 'required|string|min:8',
-        ]);
+        // Get all bookings for this client with flight details
+        $bookings = Booking::where('client_id', $client->id)
+                          ->with(['flight' => function($query) {
+                              $query->with(['airline', 'departureAirport', 'arrivalAirport']);
+                          }])
+                          ->get();
 
-        Log::info('Password check debug', [
-            'current_password_provided' => $validated['current_password'],
-            'user_password_hash' => $user->password,
-            'hash_check_result' => Hash::check($validated['current_password'], $user->password)
-        ]);
-
-        // Verify current password
-        if (!Hash::check($validated['current_password'], $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Current password is incorrect'
-            ], 400);
-        }
-
-        // Check if new password is different from current password
-        if (Hash::check($validated['new_password'], $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'New password must be different from current password'
-            ], 400);
-        }
-
-        // Update password
-        $user->password = Hash::make($validated['new_password']);
-        $user->save();
+        // Extract flights from bookings
+        $flights = $bookings->map(function($booking) {
+            return [
+                'booking_id' => $booking->id,
+                'booking_date' => $booking->booking_date,
+                'seat_number' => $booking->seat_number,
+                'booking_status' => $booking->status,
+                'price' => $booking->price,
+                'flight' => $booking->flight
+            ];
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'Password changed successfully'
+            'data' => [
+                'client' => $client,
+                'flights' => $flights,
+                'total_bookings' => $flights->count()
+            ],
+            'message' => 'Flights retrieved successfully'
         ]);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $client = Client::findOrFail($id);
+        $client->user->delete();
+        return response()->json(['message' => 'Client deleted']);
+    }
+
 }

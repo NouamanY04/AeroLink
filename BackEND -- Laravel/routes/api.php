@@ -15,6 +15,7 @@ Route::post('register', [RegisterApiController::class, 'register']);
 Route::get('vols/search', [FlightApiController::class, 'search']);
 Route::apiResource('vols', FlightApiController::class);
 Route::get('clients/search', [ClientApiController::class, 'search']);
+Route::get('clients/flights/{username}', [ClientApiController::class, 'getFlightsByUsername']);
 Route::put('clients/update/{username}', [ClientApiController::class, 'update']);
 Route::post('clients/change-password/{username}', [ClientApiController::class, 'changePassword']);
 Route::apiResource('clients', ClientApiController::class);

@@ -68,3 +68,13 @@ export const ChangePassword = async (username, passwordData) => {
         throw error.response?.data || error.message;
     }
 };
+
+export const getUpcomingFlights = async (username) => {
+    try {
+        const response = await axios.get(`${API_URL}/flights/${encodeURIComponent(username)}`);
+        return response.data;
+    } catch (error) {
+        console.error('Search API Error:', error.response?.data || error);
+        throw error.response?.data || error.message;
+    }
+}

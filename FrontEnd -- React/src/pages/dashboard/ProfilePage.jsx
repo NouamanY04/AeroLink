@@ -16,20 +16,9 @@ const ProfileSettings = ({ onContentLoaded, avatarColor, avatarInitial }) => {
 
   const [successMessage, setSuccessMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [passwordMessage, setPasswordMessage] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
-  const [showNewPwd, setShowNewPwd] = useState(false);
-  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', icon: User },
-    { id: 'security', label: 'Security', icon: Lock }
   ];
 
   const handleGetClientInfo = async () => {
@@ -81,43 +70,6 @@ const ProfileSettings = ({ onContentLoaded, avatarColor, avatarInitial }) => {
     setPersonalInfo(prev => ({ ...prev, [field]: value }));
   };
 
-  const handlePasswordChange = async () => {
-    setPasswordMessage('');
-    setPasswordError('');
-    try {
-      const username = localStorage.getItem('userLoggedName');
-      const userId = localStorage.getItem('userLoggedId');
-      if (!username || !userId) return;
-
-      // Change password in Laravel API
-      const result = await ChangePassword(username, {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-        newPasswordConfirmation: passwordData.confirmPassword
-      });
-
-      // Change password in Supabase
-      const { error: supabaseError } = await supabase.auth.updateUser({
-        password: passwordData.newPassword
-      });
-
-
-      // Handle messages
-      if (result && result.message && !supabaseError) {
-        setPasswordMessage('Password updated successfully!');
-      } else if (result && result.message && supabaseError) {
-        setPasswordMessage(result.message);
-        setPasswordError('Supabase password update failed: ' + supabaseError.message);
-      } else if (supabaseError) {
-        setPasswordError('Supabase password update failed: ' + supabaseError.message);
-      } else {
-        setPasswordMessage('Password updated successfully!');
-      }
-    } catch (error) {
-      setPasswordError(error.message || 'Password change failed!');
-    }
-  };
-
   const handleSave = async () => {
     setIsSaving(true);
     setSuccessMessage('');
@@ -159,44 +111,31 @@ const ProfileSettings = ({ onContentLoaded, avatarColor, avatarInitial }) => {
 
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 overflow-hidden">
       {successMessage && (
-        <div className="mx-4 mt-4 mb-2 px-4 py-2 rounded bg-green-100 text-green-800 text-xs font-medium border border-green-300">
-          {successMessage}
-        </div>
-      )}
-      {/* Password Success/Error Message */}
-      {passwordMessage && (
-        <div className="mx-4 mt-2 mb-2 px-4 py-2 rounded bg-green-100 text-green-800 text-xs font-medium border border-green-300">
-          {passwordMessage}
-        </div>
-      )}
-      {passwordError && (
-        <div className="mx-4 mt-2 mb-2 px-4 py-2 rounded bg-red-100 text-red-800 text-xs font-medium border border-red-300">
-          {passwordError}
+        <div className="mx-6 mt-6 mb-4 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200 flex items-center space-x-2">
+          <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+          <span>{successMessage}</span>
         </div>
       )}
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-base font-semibold text-gray-900">Profile Settings</h3>
-        <p className="text-xs text-gray-500 mt-1">Manage your account settings and preferences</p>
-      </div>
+
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex space-x-4 px-4">
+      <div className="border-b border-slate-200/60">
+        <nav className="flex space-x-6 px-6">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-1 py-2 border-b-2 font-medium text-xs transition-colors ${activeTab === tab.id
+                className={`flex items-center space-x-2 py-4 border-b-2 font-semibold text-sm transition-all duration-200 ${activeTab === tab.id
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                   }`}
               >
-                <Icon className="h-3 w-3" />
+                <Icon className="h-4 w-4" />
                 <span>{tab.label}</span>
               </button>
             );
@@ -205,169 +144,104 @@ const ProfileSettings = ({ onContentLoaded, avatarColor, avatarInitial }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="p-4">
+      <div className="p-6">
         {activeTab === 'personal' && (
-          <div className="space-y-4">
+          <div className="space-y-8">
             {/* Profile Picture */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               <div className="relative">
-                <div className={`w-14 h-14 bg-gradient-to-r ${avatarColor} rounded-full flex items-center justify-center text-white text-xl font-bold`}>
+                <div className={`w-20 h-20 bg-gradient-to-r ${avatarColor} rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg`}>
                   {avatarInitial}
                 </div>
-                <button className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-0.5 shadow-sm hover:bg-gray-50 transition-colors">
-                  <Camera className="h-3 w-3 text-gray-600" />
+                <button className="absolute -bottom-1 -right-1 bg-white border-2 border-slate-200 rounded-xl p-2 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110">
+                  <Camera className="h-4 w-4 text-slate-600" />
                 </button>
               </div>
               <div>
+                <h4 className="text-lg font-semibold text-slate-800 mb-1">Profile Photo</h4>
+                <p className="text-slate-600 text-sm">Upload a new profile picture</p>
               </div>
             </div>
 
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
                 <input
                   type="text"
                   value={personalInfo.FullName}
                   onChange={(e) => handlePersonalInfoChange('FullName', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:bg-slate-50"
+                  placeholder="Enter your full name"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
                 <input
                   type="email"
                   value={personalInfo.email}
                   readOnly
                   onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
-                  className="w-full border border-gray-200 bg-gray-100 text-gray-400 rounded-lg px-2 py-1 text-xs cursor-not-allowed"
+                  className="w-full border border-slate-200 bg-slate-100 text-slate-500 rounded-xl px-4 py-3 text-sm cursor-not-allowed"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Phone</label>
                 <input
                   type="tel"
                   value={personalInfo.phone}
                   onChange={(e) => handlePersonalInfoChange('phone', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:bg-slate-50"
+                  placeholder="Enter your phone number"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Country</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Country</label>
                 <input
                   type="text"
                   value={personalInfo.country}
                   onChange={(e) => handlePersonalInfoChange('country', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:bg-slate-50"
+                  placeholder="Enter your country"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">City</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">City</label>
                 <input
                   type="text"
                   value={personalInfo.city}
                   onChange={(e) => handlePersonalInfoChange('city', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:bg-slate-50"
+                  placeholder="Enter your city"
                 />
               </div>
 
               <div >
-                <label className="block text-xs font-medium text-gray-700 mb-1">Passport Number</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Passport Number</label>
                 <input
                   type="text"
                   value={personalInfo.passportNumber}
                   onChange={(e) => handlePersonalInfoChange('passportNumber', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:bg-slate-50"
+                  placeholder="Enter your passport number"
                 />
               </div>
             </div>
           </div>
         )}
 
-        {activeTab === 'security' && (
-          <div className="space-y-4">
-            {/* Change Password */}
-            <div>
-              <h4 className="text-base font-medium text-gray-900 mb-2">Change Password</h4>
-              <div className="space-y-2 max-w-xs">
-                {/* Current Password */}
-                <div className="relative">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Current Password</label>
-                  <input
-                    type={showCurrentPwd ? "text" : "password"}
-                    value={passwordData.currentPassword}
-                    onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-6 text-gray-500"
-                    onClick={() => setShowCurrentPwd((v) => !v)}
-                    tabIndex={-1}
-                  >
-                    {showCurrentPwd ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-                {/* New Password */}
-                <div className="relative">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">New Password</label>
-                  <input
-                    type={showNewPwd ? "text" : "password"}
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-6 text-gray-500"
-                    onClick={() => setShowNewPwd((v) => !v)}
-                    tabIndex={-1}
-                  >
-                    {showNewPwd ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-                {/* Confirm New Password */}
-                <div className="relative">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Confirm New Password</label>
-                  <input
-                    type={showConfirmPwd ? "text" : "password"}
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-6 text-gray-500"
-                    onClick={() => setShowConfirmPwd((v) => !v)}
-                    tabIndex={-1}
-                  >
-                    {showConfirmPwd ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-                <button
-                  onClick={handlePasswordChange}
-                  className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-xs"
-                >
-                  Update Password
-                </button>
-              </div>
-            </div>
-
-          </div>
-        )}
 
         {/* Save Button */}
-        <div className="flex justify-end pt-4 border-t border-gray-200 mt-6">
+        <div className="flex justify-end pt-6 border-t border-slate-200/60 mt-8">
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-xs"
+            className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Save className="h-3 w-3" />
+            <Save className="h-4 w-4" />
             <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
           </button>
         </div>

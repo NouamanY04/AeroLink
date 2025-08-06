@@ -3,7 +3,6 @@ import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import WelcomePanel from './components/dashboard/WelcomePanel';
 import UpcomingFlights from './components/dashboard/UpcomingFlights';
-import NotificationsCenter from './components/dashboard/NotificationsCenter';
 import ProfileSettings from './pages/dashboard/ProfilePage';
 import { getStableAvatarColor } from './utils/Avatar';
 
@@ -55,32 +54,18 @@ function AppDashboard() {
         switch (activeSection) {
             case 'dashboard':
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                         <WelcomePanel />
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                            <div className="xl:col-span-2">
-                                <UpcomingFlights />
-                            </div>
-                            <div>
-                                <NotificationsCenter />
-                            </div>
-                        </div>
+                        <UpcomingFlights />
                     </div>
                 );
             case 'profile':
                 return <ProfileSettings onContentLoaded={isContentLoaded} avatarColor={avatarColor} avatarInitial={avatarInitial} />;
             default:
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                         <WelcomePanel />
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                            <div className="xl:col-span-2">
-                                <UpcomingFlights />
-                            </div>
-                            <div>
-                                <NotificationsCenter />
-                            </div>
-                        </div>
+                        <UpcomingFlights />
                     </div>
                 );
         }
@@ -90,10 +75,10 @@ function AppDashboard() {
     // It includes the sidebar, header, and main content area
     // The main content area is populated based on the active section in the function renderContent
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
             <div className="flex">
                 {/* Sidebar */}
-                <div className="fixed left-0 top-0 h-screen w-48 z-50">
+                <div className="fixed left-0 top-0 h-screen w-64 z-50">
                     <Sidebar
                         activeSection={activeSection}
                         setActiveSection={setActiveSection}
@@ -105,14 +90,14 @@ function AppDashboard() {
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 pl-48">
+                <div className="flex-1 pl-64">
                     {/* Fixed Header */}
-                    <div className="fixed top-0 left-48 right-0 z-40 h-16 ">
+                    <div className="fixed top-0 left-64 right-0 z-40 h-16">
                         <Header activeSection={activeSection} avatarColor={avatarColor} avatarInitial={avatarInitial} />
                     </div>
 
                     {/* Page Content */}
-                    <main className="p-6 pt-16">
+                    <main className="p-8 pt-24">
                         {renderContent()}
                     </main>
                 </div>

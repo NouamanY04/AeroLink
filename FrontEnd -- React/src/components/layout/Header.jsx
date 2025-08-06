@@ -14,32 +14,25 @@ const Header = ({ activeSection, avatarColor, avatarInitial }) => {
     };
 
     return (
-        <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 h-16">
-            <div className="flex items-center justify-between">
+        <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-200/60 px-6 py-4 h-16">
+            <div className="flex items-center justify-between h-full">
                 {/* Page Title */}
                 <div className="ml-0 lg:ml-0">
-                    <h1 className="text-base font-medium text-gray-900">{getSectionTitle(activeSection)}</h1>
-                    <p className="text-[10px] text-gray-500 mt-1">
-                        {new Date().toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
-                    </p>
+                    <h1 className="text-xl font-semibold text-slate-800 tracking-tight">{getSectionTitle(activeSection)}</h1>
+
                 </div>
 
                 {/* Header Actions */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
                     {/* Notifications */}
-                    <button className="relative p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                        <Bell className="h-4 w-4" />
-                        <span className="absolute top-0 right-0 h-1.5 w-1.5 bg-red-500 rounded-full"></span>
+                    <button className="relative p-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all duration-200 group">
+                        <Bell className="h-5 w-5" />
+                        <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span className="absolute inset-0 bg-slate-100 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
                     </button>
 
-
                     {/* User Avatar */}
-                    <div className={`w-6 h-6 bg-gradient-to-r ${avatarColor} rounded-full flex items-center justify-center text-white font-semibold text-xs`}>
+                    <div className={`w-10 h-10 bg-gradient-to-r ${avatarColor} rounded-xl flex items-center justify-center text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:scale-105`}>
                         {avatarInitial}
                     </div>
                 </div>
