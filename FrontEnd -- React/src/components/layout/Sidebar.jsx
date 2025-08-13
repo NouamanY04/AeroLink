@@ -112,10 +112,7 @@ const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobil
                         </div>
                     </div>
 
-                    <button className="w-full flex items-center justify-center px-4 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all duration-200 text-sm font-medium group">
-                        <LogOut className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform duration-200" />
-                        <span>Logout</span>
-                    </button>
+
                 </div>
             </div>
         </>

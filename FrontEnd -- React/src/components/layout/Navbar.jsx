@@ -86,7 +86,13 @@ function Navbar() {
     try {
       await supabase.auth.signOut();
       localStorage.removeItem('userLoggedId');
-      setUser(null);
+      localStorage.removeItem('userLoggedName');
+      localStorage.removeItem('userLoggedEmail');
+      localStorage.removeItem('cachedUserInfo');
+      setShowUserDropdown(false); // Hide dropdown immediately
+      setUser(null); // Remove user immediately
+      setAvatarInitial('U');
+      setAvatarColor(avatarColors[Math.floor(Math.random() * avatarColors.length)]);
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -128,7 +134,7 @@ function Navbar() {
 
           {/* User Account */}
           <div className="flex items-center space-x-4">
-            {user ? (
+            {user && user.username ? (
               <div className="relative group hidden md:block">
                 <button
                   className="flex items-center space-x-2 focus:outline-none"
@@ -137,10 +143,7 @@ function Navbar() {
                   <div className={`w-8 h-8 bg-gradient-to-r ${avatarColor} text-white rounded-full flex items-center justify-center font-bold`}>
                     {avatarInitial}
                   </div>
-                  <span className="text-gray-700">{user.username || 'User'}</span>
                 </button>
-
-                {/* Dropdown */}
                 {showUserDropdown && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-md z-50">
                     <Link

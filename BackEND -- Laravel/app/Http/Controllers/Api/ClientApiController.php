@@ -168,7 +168,6 @@ class ClientApiController extends Controller
     {
         // Find the user by username (name or email)
         $user = User::where('name', 'LIKE', "%{$username}%")
-                    ->orWhere('email', 'LIKE', "%{$username}%")
                     ->first();
 
         if (!$user) {
@@ -177,6 +176,8 @@ class ClientApiController extends Controller
                 'message' => 'User not found with the provided username'
             ], 404);
         }
+        Log::info('User found for flights retrieval:', ['user' => $user]);
+        Log::info('User ID:', ['user_id' => $user->id]);
 
         // Find the client associated with this user
         $client = Client::where('user_id', $user->id)->first();
@@ -187,6 +188,7 @@ class ClientApiController extends Controller
                 'message' => 'Client not found for this user'
             ], 404);
         }
+        Log::info('Client found for flights retrieval:', ['client' => $client]);
 
         // Get all bookings for this client with flight details
         $bookings = Booking::where('client_id', $client->id)
