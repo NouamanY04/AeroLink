@@ -89,6 +89,7 @@ function Navbar() {
       localStorage.removeItem('userLoggedName');
       localStorage.removeItem('userLoggedEmail');
       localStorage.removeItem('cachedUserInfo');
+      localStorage.removeItem('upcomingFlights')
       setShowUserDropdown(false); // Hide dropdown immediately
       setUser(null); // Remove user immediately
       setAvatarInitial('U');

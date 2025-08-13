@@ -27,26 +27,56 @@ class ClientApiController extends Controller
      */
     public function search(Request $request)
     {
+        Log::info('Client search request received:', $request->all());
+        
         $validated = $request->validate([
             'username' => 'required|string|max:255',
         ]);
 
         $username = $validated['username'];
+        Log::info('Searching for username:', ['search_term' => $username]);
 
         // Search for users with matching username
         $users = User::where('name', 'LIKE', "%{$username}%")
                     ->orWhere('email', 'LIKE', "%{$username}%")
                     ->get();
 
+        Log::info('Users found:', ['users_count' => $users->count(), 'users' => $users->toArray()]);
+
         // Get clients associated with these users
         $clients = Client::whereIn('user_id', $users->pluck('id'))
-                        ->with('user')
                         ->get();
+
+        Log::info('Clients found:', ['clients_count' => $clients->count(), 'clients' => $clients->toArray()]);
+
+        // Prepare response data with separated user and client information
+        $responseData = [];
+        
+        foreach ($users as $user) {
+            $client = $clients->where('user_id', $user->id)->first();
+            
+            $responseData[] = [
+                'user_info' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ],
+                'client_info' => $client ? [
+                    'id' => $client->id,
+                    'phone' => $client->phone,
+                    'country' => $client->country,
+                    'city' => $client->city,
+                    'passport_number' => $client->passport_number,
+                ] : null
+            ];
+        }
+
+        Log::info('Search response prepared:', ['response_data' => $responseData]);
 
         return response()->json([
             'success' => true,
-            'data' => $clients,
-            'count' => $clients->count(),
+            'data' => $responseData,
+            'count' => count($responseData),
             'search_term' => $username
         ]);
     }
@@ -104,62 +134,79 @@ class ClientApiController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $username)
-    {
-        // Find the user by username (name or email)
-        $user = User::where('name', 'LIKE', "%{$username}%")
-                    ->orWhere('email', 'LIKE', "%{$username}%")
-                    ->first();
+{
+    // Find the user by username or email
+    $user = User::where('name', 'LIKE', "%{$username}%")
+                ->orWhere('email', 'LIKE', "%{$username}%")
+                ->first();
 
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found with the provided username'
-            ], 404);
-        }
-
-        // Find the client associated with this user
-        $client = Client::where('user_id', $user->id)->first();
-
-        if (!$client) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Client not found for this user'
-            ], 404);
-        }
-        
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
-            'phone' => 'nullable|string|max:20',
-            'country' => 'nullable|string|max:100',
-            'city' => 'nullable|string|max:100',
-            'passport_number' => 'nullable|string|max:50',
-        ]);
-
-        // Update user information
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
-        }
-        $user->save();
-
-        // Update client information
-        $client->update([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'] ?? null,
-            'country' => $validated['country'] ?? null,
-            'city' => $validated['city'] ?? null,
-            'passport_number' => $validated['passport_number'] ?? null,
-        ]);
-
+    if (!$user) {
         return response()->json([
-            'success' => true,
-            'data' => $client->fresh('user'),
-            'message' => 'Client updated successfully'
-        ]);
+            'success' => false,
+            'message' => 'User not found with the provided username'
+        ], 404);
     }
+
+    // Find the client associated with this user
+    $client = Client::where('user_id', $user->id)->first();
+
+    if (!$client) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Client not found for this user'
+        ], 404);
+    }
+
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'password' => 'nullable|string|min:6',
+        'phone' => 'nullable|string|max:20',
+        'country' => 'nullable|string|max:100',
+        'city' => 'nullable|string|max:100',
+        'passport_number' => 'nullable|string|max:50',
+    ]);
+
+    // Update user information
+    $user->name = $validated['name'];
+    $user->email = $validated['email'];
+    if (!empty($validated['password'])) {
+        $user->password = Hash::make($validated['password']);
+    }
+    $user->save();
+
+    // Update client information
+    $client->update([
+        'name' => $validated['name'],
+        'phone' => $validated['phone'] ?? null,
+        'country' => $validated['country'] ?? null,
+        'city' => $validated['city'] ?? null,
+        'passport_number' => $validated['passport_number'] ?? null,
+    ]);
+
+    // Structure the response like the search() method
+    $responseData = [
+        'user_info' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ],
+        'client_info' => [
+            'id' => $client->id,
+            'phone' => $client->phone,
+            'country' => $client->country,
+            'city' => $client->city,
+            'passport_number' => $client->passport_number,
+        ]
+    ];
+
+    return response()->json([
+        'success' => true,
+        'data' => $responseData,
+        'message' => 'Client updated successfully'
+    ]);
+}
+
 
     /**
      * Get flights for a specific username.

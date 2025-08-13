@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plane, Clock, MapPin, Calendar, ArrowRight, ExternalLink } from 'lucide-react';
+import { Plane, Clock, MapPin, Calendar, ArrowRight, ExternalLink, Loader2 } from 'lucide-react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import TicketDocument from '../bookings/TicketDocument';
 import { getUpcomingFlights } from '../../services/ClientService';
@@ -8,6 +8,8 @@ const UpcomingFlights = () => {
     const [flights, setFlights] = useState([]);
     const [clientInfo, setClientInfo] = useState(null);
     const [downloadedId, setDownloadedId] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [noBooking, setNoBooking] = useState(false);
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -40,16 +42,37 @@ const UpcomingFlights = () => {
 
     useEffect(() => {
         const fetchUpcomingFlights = async () => {
+            setLoading(true);
             try {
                 const username = localStorage.getItem('userLoggedName');
-                if (username) {
+                const cached = localStorage.getItem('upcomingFlights');
+                if (cached) {
+                    const cachedData = JSON.parse(cached);
+                    setFlights(cachedData.flights || []);
+                    setClientInfo(cachedData.client || null);
+                } else if (username) {
                     const response = await getUpcomingFlights(username);
                     setFlights(response.data?.flights || []);
                     setClientInfo(response.data?.client || null);
+                    localStorage.setItem('upcomingFlights', JSON.stringify(response.data));
                 }
             } catch (error) {
+                // Check for specific error message from API
+                if (
+                    error &&
+                    (error.message === "Client not found for this user" ||
+                        error === "Client not found for this user" ||
+                        error?.error === "Client not found for this user")
+                ) {
+                    setFlights([]);
+                    setClientInfo(null);
+                    setLoading(false);
+                    setNoBooking(true);
+                    return;
+                }
                 console.error('Error fetching upcoming flights:', error);
             }
+            setLoading(false);
         };
 
         fetchUpcomingFlights();
@@ -67,7 +90,31 @@ const UpcomingFlights = () => {
             </div>
 
             <div className="divide-y divide-slate-200/60">
-                {flights.length === 0 ? (
+                {loading ? (
+                    <div className="flex justify-center items-center p-10">
+                        <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+                        <span className="ml-3 text-blue-600 font-medium">Loading flights...</span>
+                    </div>
+                ) : noBooking ? (
+                    <div className="p-10 flex flex-col items-center justify-center text-center">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png"
+                            alt="No Booking"
+                            className="w-20 h-20 mb-4 opacity-80"
+                        />
+                        <h4 className="text-lg font-bold text-blue-600 mb-2">No Bookings Yet</h4>
+                        <p className="text-slate-500 mb-4">
+                            You haven't booked any flights yet.<br />
+                            Start your journey by exploring available flights and making your first booking!
+                        </p>
+                        <a
+                            href="/"
+                            className="inline-block px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold shadow hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
+                        >
+                            Book a Flight
+                        </a>
+                    </div>
+                ) : flights.length === 0 ? (
                     <div className="p-6 text-center text-slate-500">No upcoming flights found.</div>
                 ) : (
                     flights.map((item) => {
@@ -77,9 +124,9 @@ const UpcomingFlights = () => {
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between space-y-4 lg:space-y-0">
                                     {/* Flight Info */}
                                     <div className="flex-1">
+                                        {/* ...existing flight info code... */}
                                         <div className="flex items-center space-x-3 mb-4">
                                             <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center">
-                                                {/* Airline logo or emoji, fallback to country flag */}
                                                 {flight.airline?.image ? (
                                                     <img
                                                         src={`http://localhost:8000/storage/${flight.airline.image}`}
@@ -145,7 +192,6 @@ const UpcomingFlights = () => {
                                                 <MapPin className="h-4 w-4 text-slate-400" />
                                                 <span className="font-medium">{item.seat_number}</span>
                                             </div>
-
                                         </div>
                                     </div>
 
@@ -195,4 +241,3 @@ const UpcomingFlights = () => {
 };
 
 export default UpcomingFlights;
-
