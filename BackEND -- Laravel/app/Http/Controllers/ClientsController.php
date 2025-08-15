@@ -15,6 +15,18 @@ class ClientsController extends Controller
         return view('admin.users.index', compact('clients'));
     }
 
+    public function show(Client $client)
+    {
+        $client->load(['user', 'bookings.flight']);
+        return view('admin.clients.show', compact('client'));
+    }
+
+    public function bookings(Client $client)
+    {
+        $bookings = $client->bookings()->with(['flight'])->orderBy('created_at', 'desc')->paginate(10);
+        return view('admin.clients.bookings', compact('client', 'bookings'));
+    }
+
     public function create()
     {
         return view('admin.users.create');

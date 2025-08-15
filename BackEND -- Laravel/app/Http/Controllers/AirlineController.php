@@ -10,7 +10,7 @@ class AirlineController extends Controller
 {
     public function index()
     {
-        $airlines = Airline::all();
+        $airlines = Airline::paginate(5);
         return view('admin.airlines.index', compact('airlines'));
     }
 

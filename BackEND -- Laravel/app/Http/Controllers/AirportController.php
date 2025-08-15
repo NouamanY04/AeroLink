@@ -9,7 +9,7 @@ class AirportController extends Controller
 {
     public function index()
     {
-        $airports = Airport::all();
+        $airports = Airport::orderBy('country')->orderBy('city')->paginate(3);
         return view('admin.airports.index', compact('airports'));
     }
 

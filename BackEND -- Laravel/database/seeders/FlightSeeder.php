@@ -22,9 +22,9 @@ class FlightSeeder extends Seeder
             'arrival_time' => '2025-07-12 23:15:00',
             'status' => 'scheduled',
             'price' => 2000,
-            'class' => 'Economy',
+            'class' => 'economy',
             'stops' => 2,
-            'type_vol' => 'Round-trip flight',
+            'type_vol' => 'Round-trip',
         ]);
         
     }

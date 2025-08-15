@@ -7,7 +7,7 @@ use App\Http\Controllers\BookingsController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\AirlineController;
 use App\Http\Controllers\AirportController;
-
+use App\Http\Controllers\AdminAuthController;
 
 use App\Http\Controllers\Api\FlightApiController;
 use App\Http\Controllers\Api\BookingApiController;
@@ -19,20 +19,25 @@ use App\Http\Controllers\Api\Auth\RegisterApiController;
 // Homepage redirects to admin dashboard
 Route::redirect('/', '/admin/dashboard', 301);
 
-// Admin Dashboard (now public)
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+// Admin Authentication Routes (public)
+Route::get('/admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.post');
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-// Profile routes (public)
-// Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-// Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-// Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-// Admin Resource Routes (public)
-Route::prefix('admin')->group(function () {
+// Protected Admin Routes
+Route::middleware('admin')->prefix('admin')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
+    
+    // Resource Routes
     Route::resource('flights', FlightsController::class);
     Route::resource('bookings', BookingsController::class);
     Route::resource('users', ClientsController::class);
     Route::resource('clients', ClientsController::class);
+    
+    // Additional client routes
+    Route::get('/clients/{client}/bookings', [ClientsController::class, 'bookings'])->name('clients.bookings');
+    
     Route::resource('airlines', AirlineController::class);
     Route::resource('airports', AirportController::class);
 });

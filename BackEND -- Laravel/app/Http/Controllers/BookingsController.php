@@ -11,7 +11,7 @@ class BookingsController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::with(['client', 'flight'])->get();
+        $bookings = Booking::with(['client', 'flight'])->paginate(6);
         return view('admin.bookings.index', compact('bookings'));
     }
 

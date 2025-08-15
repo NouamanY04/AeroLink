@@ -10,7 +10,7 @@ class Flight extends Model
     use HasFactory;
 
     protected $fillable = [
-        'flight_number', 'airline_id', 'departure_airport_id', 'arrival_airport_id', 'departure_time', 'arrival_time', 'status', 'price', 'seats_total', 'seats_available',
+        'flight_number', 'airline_id', 'departure_airport_id', 'arrival_airport_id', 'departure_time', 'arrival_time', 'status', 'price', 'class', 'type_vol', 'stops',
     ];
 
     public function airline()
