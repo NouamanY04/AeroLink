@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/bookings';
+const API_URL = import.meta.env.VITE_API_URL + '/bookings';
 
 export const storeClientReservation = async (data) => {
     try {

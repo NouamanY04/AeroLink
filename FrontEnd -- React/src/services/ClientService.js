@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api/clients';
+const API_URL = import.meta.env.VITE_API_URL + '/clients';
 
 export const AddClient = async (data) => {
     try {
@@ -35,6 +35,21 @@ export const getClientInfo = async (username) => {
     }
 };
 
+export const ChangePassword = async (username, passwordData) => {
+    try {
+        const response = await axios.post(`${API_URL}/change-password/${username}`, {
+            current_password: passwordData.currentPassword,
+            new_password: passwordData.newPassword,
+            new_password_confirmation: passwordData.newPasswordConfirmation
+        });
+        return response.data;
+
+    } catch (error) {
+        console.error('Change Password API Error:', error.response?.data || error);
+        throw error.response?.data || error.message;
+    }
+};
+
 export const UpdateClient = async (username, data) => {
     try {
         const response = await axios.put(`${API_URL}/update/${username}`, {
@@ -54,20 +69,6 @@ export const UpdateClient = async (username, data) => {
     }
 };
 
-export const ChangePassword = async (username, passwordData) => {
-    try {
-        const response = await axios.post(`${API_URL}/change-password/${username}`, {
-            current_password: passwordData.currentPassword,
-            new_password: passwordData.newPassword,
-            new_password_confirmation: passwordData.newPasswordConfirmation
-        });
-        return response.data;
-
-    } catch (error) {
-        console.error('Change Password API Error:', error.response?.data || error);
-        throw error.response?.data || error.message;
-    }
-};
 
 export const getUpcomingFlights = async (username) => {
     try {

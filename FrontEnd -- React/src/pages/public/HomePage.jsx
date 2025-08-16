@@ -83,7 +83,7 @@ function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <header className="bg-blue-950 text-white py-20 text-center relative overflow-hidden">
+      <header className="bg-blue-900 text-white py-20 text-center relative ">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -96,13 +96,16 @@ function Home() {
           </svg>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <h1 className="text-5xl md:text-3xl font-extrabold leading-tight mb-4 animate-fade-in-up">
+        <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+          <h1 className="text-5xl md:text-3xl font-extrabold leading-tight mb-8 animate-fade-in-up">
             Your Gateway to the Skies — Fast, Easy, Reliable
           </h1>
-          <SearchForm />
+          <div id="search-form" className="w-full max-w-5xl">
+            <SearchForm />
+          </div>
         </div>
       </header>
+      {/* ...rest of your code... */}
 
       {/* Popular Destinations Section */}
       <section className="container mx-auto px-4 py-16">

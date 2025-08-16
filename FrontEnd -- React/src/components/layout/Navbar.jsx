@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabaseClient';
 import { getStableAvatarColor } from '../../utils/Avatar';
+import { FiMail, FiInfo } from "react-icons/fi"; // Only keep FiInfo for About
 
 // Array of gradient colors for avatar
 const avatarColors = [
@@ -101,12 +102,12 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className="bg-blue-900 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -122,19 +123,29 @@ function Navbar() {
                 />
               </svg>
             </div>
-            <span className="text-2xl font-bold text-blue-600">AeroLink</span>
-          </div>
+            <span className="text-2xl font-bold text-white">AeroLink</span>
+          </Link>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex space-x-8">
-            <Link to={'/'} className="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Home</Link>
-            <Link to={'/FlightsDisplay'} className="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Flights</Link>
-            <Link to={'/about'} className="text-gray-700 hover:text-blue-600 font-medium transition duration-300">About Us</Link>
-            <Link to={'/contact'} className="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Contact Us</Link>
-          </div>
 
-          {/* User Account */}
+          {/* User Account and Modern Navigation Links */}
           <div className="flex items-center space-x-4">
+            {/* About and Help links close to profile */}
+            <Link
+              to="/about"
+              className="flex items-center text-white hover:text-blue-200 font-medium transition duration-300 space-x-1"
+              title="About"
+            >
+              <FiInfo className="w-5 h-5" />
+              <span>About</span>
+            </Link>
+            <Link
+              to="/contact"
+              className="text-white hover:text-blue-200 font-medium transition duration-300"
+              title="Help"
+            >
+              Help
+            </Link>
+            {/* Profile/Login */}
             {user && user.username ? (
               <div className="relative group hidden md:block">
                 <button
@@ -164,7 +175,7 @@ function Navbar() {
               </div>
             ) : (
               <Link to={'/login'} className="hidden md:flex items-center space-x-2">
-                <span className="text-gray-700">Login</span>
+                <span className="text-white">Login</span>
               </Link>
             )}
 
@@ -174,28 +185,34 @@ function Navbar() {
               onClick={() => setShowMobileMenu(!showMobileMenu)}
               aria-label="Open menu"
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
           </div>
         </div>
 
+        {/* Mobile menu */}
         {showMobileMenu && (
-          <div className="md:hidden flex flex-col space-y-2 pb-4 animate-fadeIn">
-            <Link to={'/'} className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium" onClick={() => setShowMobileMenu(false)}>Home</Link>
-            <Link to={'/FlightsDisplay'} className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium" onClick={() => setShowMobileMenu(false)}>Flights</Link>
-            <Link to={'/about'} className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium" onClick={() => setShowMobileMenu(false)}>About Us</Link>
-            <Link to={'/contact'} className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium" onClick={() => setShowMobileMenu(false)}>Contact Us</Link>
+          <div className="md:hidden flex flex-col space-y-2 pb-4 animate-fadeIn bg-blue-900">
+            <Link to={'/'} className="block px-4 py-2 text-white hover:text-blue-200 font-medium" onClick={() => setShowMobileMenu(false)}>Home</Link>
+            <Link to={'/FlightsDisplay'} className="block px-4 py-2 text-white hover:text-blue-200 font-medium" onClick={() => setShowMobileMenu(false)}>Flights</Link>
+            <Link to={'/about'} className="flex items-center px-4 py-2 text-white hover:text-blue-200 font-medium space-x-1" onClick={() => setShowMobileMenu(false)}>
+              <FiInfo className="w-5 h-5" />
+              <span>About</span>
+            </Link>
+            <Link to={'/contact'} className="block px-4 py-2 text-white hover:text-blue-200 font-medium" onClick={() => setShowMobileMenu(false)}>
+              Help
+            </Link>
             {!user && (
-              <Link to={'/login'} className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium" onClick={() => setShowMobileMenu(false)}>Login</Link>
+              <Link to={'/login'} className="block px-4 py-2 text-white hover:text-blue-200 font-medium" onClick={() => setShowMobileMenu(false)}>Login</Link>
             )}
             {user && (
               <>
-                <Link to="/dashboard" className="block px-4 py-2 text-gray-700 hover:text-blue-600 font-medium" onClick={() => setShowMobileMenu(false)}>Dashboard</Link>
+                <Link to="/dashboard" className="block px-4 py-2 text-white hover:text-blue-200 font-medium" onClick={() => setShowMobileMenu(false)}>Dashboard</Link>
                 <button
                   onClick={() => { handleLogout(); setShowMobileMenu(false); }}
-                  className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                  className="block w-full text-left px-4 py-2 text-red-300 hover:bg-blue-800"
                 >
                   Logout
                 </button>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Flight;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FlightApiController extends Controller
 {
@@ -29,6 +30,7 @@ class FlightApiController extends Controller
      */
     public function search(Request $request)
     {
+        Log::info('Request',$request->all());
         $query = Flight::with(['airline', 'departureAirport', 'arrivalAirport']);
 
         if ($request->has('departure_city')) {

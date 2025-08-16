@@ -74,15 +74,15 @@ function SearchForm() {
             const params = {
                 departure_city: infoTrip.from,
                 arrival_city: infoTrip.to,
-                departure_time: infoTrip.date_depart, // format: YYYY-MM-DD
-                return_time: infoTrip.date_Arrive,       // format: YYYY-MM-DD (optional)
+                departure_time: infoTrip.date_depart,
+                return_time: infoTrip.date_Arrive,
             };
 
 
             // Fetch flights based on infoTrip
-            const flights = await getFlights(params); // Pass search params if needed
+            const flights = await getFlights(params);
 
-            // console.log('Fetched flights:', flights);
+            //console.log('Fetched flights:', flights);
 
             // Save flights to Redux - the 'api' parameter tells the action to transform the data
             dispatch(store_data_flights(flights, 'api'));
@@ -169,7 +169,7 @@ function SearchForm() {
             </div>
 
             {/* Search Fields Container */}
-            <div className="flex items-end bg-gray-50 rounded-xl mx-6 mb-6 overflow-hidden border border-gray-200">
+            <div className="flex items-end bg-gray-50 rounded-xl mx-6 mb-6 border border-gray-300">
                 {/* From Field */}
                 <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors">
                     <label className="block text-xs font-medium text-gray-600 mb-1">From</label>
@@ -188,13 +188,14 @@ function SearchForm() {
                 </div>
 
                 {/* Swap Button */}
-                <div className="flex items-center justify-center px-2 bg-white border-r border-gray-200">
-                    <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center justify-center z-10 mb-3">
+                    <button className="w-8 h-8 bg-blue-950 text-white rounded-full flex items-center justify-center shadow-md transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
                     </button>
                 </div>
+
 
                 {/* To Field */}
                 <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors relative">
@@ -212,11 +213,11 @@ function SearchForm() {
                             onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
                             required
                         />
+                        {/* Suggestions Dropdown */}
                         {showSuggestions && suggestions.length > 0 && (
-                            <ul className="absolute z-20 left-0 right-0 top-full bg-white text-black border border-gray-200 rounded-lg mt-1 max-h-48 overflow-y-auto shadow-xl">
+                            <ul className="absolute z-50 left-0 right-0 top-full bg-white border border-blue-200 rounded-xl mt-2 shadow-xl max-h-56 overflow-y-auto">
                                 {suggestions.map((destination, index) => {
                                     const searchTerm = destinationInput.toLowerCase();
-
                                     const cityIndex = destination.city.toLowerCase().indexOf(searchTerm);
                                     const countryIndex = destination.country.toLowerCase().indexOf(searchTerm);
 
@@ -225,15 +226,15 @@ function SearchForm() {
                                     let matchEnd = -1;
 
                                     if (cityIndex !== -1) {
-                                        mainText = `${destination.city} , ${destination.country}`;
+                                        mainText = `${destination.city}, ${destination.country}`;
                                         matchStart = cityIndex;
                                         matchEnd = cityIndex + searchTerm.length;
                                     } else if (countryIndex !== -1) {
-                                        mainText = `${destination.country}, ${destination.city} `;
+                                        mainText = `${destination.country}, ${destination.city}`;
                                         matchStart = 0;
                                         matchEnd = searchTerm.length;
                                     } else {
-                                        mainText = `${destination.city} , ${destination.country}`;
+                                        mainText = `${destination.city}, ${destination.country}`;
                                         matchStart = 0;
                                         matchEnd = 0;
                                     }
@@ -248,13 +249,9 @@ function SearchForm() {
                                             className="py-3 px-4 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
                                             onMouseDown={() => handleSuggestionClick(destination)}
                                         >
-                                            <div className="flex items-center space-x-3">
-                                                <span>
-                                                    <span className="font-semibold text-black">{beforeMatch}</span>
-                                                    <span className="font-bold text-black">{match}</span>
-                                                    <span className="text-gray-500 font-normal">{afterMatch}</span>
-                                                </span>
-                                            </div>
+                                            <span className="font-semibold text-gray-800">{beforeMatch}</span>
+                                            <span className="font-bold text-blue-600">{match}</span>
+                                            <span className="text-gray-500">{afterMatch}</span>
                                         </li>
                                     );
                                 })}
@@ -266,7 +263,7 @@ function SearchForm() {
                 {/* Departure Date */}
                 <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors">
                     <label className="block text-xs font-medium text-gray-600 mb-1">Depart</label>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                         <input
                             type="date"
                             name="date_depart"
@@ -281,7 +278,7 @@ function SearchForm() {
                 {/* Return Date */}
                 <div className={`flex-1 bg-white p-4 hover:bg-gray-50 transition-colors ${typeTrip === 'oneWay' ? 'opacity-50' : ''} ${typeTrip !== 'oneWay' ? 'border-r border-gray-200' : ''}`}>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Return</label>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                         <input
                             type="date"
                             name="date_Arrive"
@@ -293,13 +290,12 @@ function SearchForm() {
                             min={date_depart || undefined}
                         />
                     </div>
-
                 </div>
 
                 {/* Search Button */}
-                <div className="bg-blue-600 hover:bg-blue-700 transition-colors">
+                <div className="bg-blue-600 hover:bg-blue-700 transition-colors rounded-r-2xl">
                     <button
-                        className="h-full px-8 py-4 text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+                        className="h-full px-8 py-4 text-white font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                         onClick={handleSearch}
                         disabled={isLoading || !isFormValid()}
                     >

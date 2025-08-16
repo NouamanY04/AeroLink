@@ -25,6 +25,7 @@ class FlightsController extends Controller
 
     public function store(Request $request)
     {
+            
             $validated = $request->validate([
             'flight_number' => 'required|unique:flights,flight_number',
             'airline_id' => 'required|exists:airlines,id',

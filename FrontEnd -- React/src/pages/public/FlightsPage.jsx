@@ -11,8 +11,8 @@ function FlightsDisplay() {
     const infoTrip = useSelector((state) => state.infoTrip.infoTrip);
     const [isFilterVisible, setIsFilterVisible] = useState(true);
 
-    console.log(flights);
-    console.log(infoTrip);
+    // console.log(flights)
+    // console.log(infoTrip)
 
     const { type: typeTrip, from, to, date_depart, date_Arrive } = infoTrip;
     const dispatch = useDispatch();
@@ -35,7 +35,7 @@ function FlightsDisplay() {
     }
 
     const flightsWanted = filterFlightsBasedOnUserTrip();
-    console.log(flightsWanted)
+    //console.log(flightsWanted)
 
     function removeDuplicates(key) {
         return [...new Set(flightsWanted.map((item) => item[key]))];
@@ -62,7 +62,7 @@ function FlightsDisplay() {
     const minPrice = getMinAndMaxValue('price').min;
     const maxPrice = getMinAndMaxValue('price').max;
 
-    console.log(minPrice, maxPrice);
+    //console.log(minPrice, maxPrice);
 
     const [filters, setFilters] = useState({
         stops: [],
@@ -100,7 +100,7 @@ function FlightsDisplay() {
 
     const filteredFlights = filterFlights();
 
-    //console.log(filteredFlights);
+    ////console.log(filteredFlights);
 
     function getElements(array, count) {
         return array.slice(0, count);

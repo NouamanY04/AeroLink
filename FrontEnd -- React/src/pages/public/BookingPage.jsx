@@ -77,7 +77,7 @@ const Reservation = () => {
 
       const clientResponse = await AddClient(clientInfo);
       (clientResponse && clientResponse.id) && console.log('✅ Client added successfully.');
-
+      (clientResponse && clientResponse.id) && localStorage.removeItem('cachedUserInfo');
 
       const Bookingresponse = await storeClientReservation(bookingData);
       (Bookingresponse && Bookingresponse.id) && console.log('✅ Booking stored successfully.');

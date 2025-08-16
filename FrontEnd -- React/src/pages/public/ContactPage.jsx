@@ -8,7 +8,7 @@ import { AddContactRequest } from '../../services/ContactService';
 
 function Contact() {
   const [userInfo, setUserInfo] = useState({
-    username: localStorage.getItem('username') || '',
+    username: localStorage.getItem('userLoggedName') || '',
     email: localStorage.getItem('userLoggedEmail') || '',
     message: ''
   });
@@ -50,16 +50,18 @@ function Contact() {
         </div>
       )}
       {showPopup && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded shadow-lg text-base font-medium transition-all duration-300">
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-lg text-[11px] font-medium transition-all duration-300">
           Thank you for contacting us! We will get back to you soon.
+        </div>
+      )}
+      {!success && (
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-4 py-2 rounded shadow-lg text-[9.5px] font-medium transition-all duration-300">
+          Only Signed Up users can contact ower team , Thank you
         </div>
       )}
       <header className='py-6 px-4 md:px-6 lg:px-8 max-w-4xl mx-auto'>
         <div className="title text-gray-800 text-xl md:text-2xl font-semibold text-center">
-          Contact Our Support Team
-        </div>
-        <div className="description mt-2 text-gray-500 text-sm md:text-base text-center">
-          Have a question about our services or need assistance with your booking? Our support team is here to help. Chat with our assistance team and get your answer in less than 5 minutes.
+          How We Can Help ?
         </div>
       </header>
 
