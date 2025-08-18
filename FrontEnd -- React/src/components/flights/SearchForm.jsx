@@ -141,44 +141,60 @@ function SearchForm() {
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg max-w-7xl mx-auto mt-6" style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}>
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-7xl mx-auto mt-6 mb-8 border border-sky-200/50 overflow-visible" style={{ fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}>
             {/* Trip Type Selection */}
-            <div className="flex justify-start space-x-8 p-6 pb-4">
-                <label className="inline-flex items-center cursor-pointer">
+            <div className="flex justify-start space-x-6 px-6 pt-6 pb-2">
+                <label className="relative pb-2 cursor-pointer">
                     <input
                         type="radio"
-                        className="form-radio text-blue-600 w-4 h-4"
                         name="tripType"
                         value="oneWay"
-                        checked={typeTrip === 'oneWay'}
+                        checked={typeTrip === "oneWay"}
                         onChange={handleTripTypeChange}
+                        className="sr-only"
                     />
-                    <span className="ml-2 text-gray-700 font-medium text-sm">One-way</span>
+                    <span
+                        className={`text-sm font-medium transition-colors ${typeTrip === "oneWay"
+                            ? "text-sky-600 border-b-2 border-sky-600"
+                            : "text-gray-500 hover:text-sky-600"
+                            }`}
+                    >
+                        One-way
+                    </span>
                 </label>
-                <label className="inline-flex items-center cursor-pointer">
+
+                <label className="relative pb-2 cursor-pointer">
                     <input
                         type="radio"
-                        className="form-radio text-blue-600 w-4 h-4"
                         name="tripType"
                         value="roundTrip"
-                        checked={typeTrip === 'roundTrip'}
+                        checked={typeTrip === "roundTrip"}
                         onChange={handleTripTypeChange}
+                        className="sr-only"
                     />
-                    <span className="ml-2 text-gray-700 font-medium text-sm">Round Trip</span>
+                    <span
+                        className={`text-sm font-medium transition-colors ${typeTrip === "roundTrip"
+                            ? "text-sky-600 border-b-2 border-sky-600"
+                            : "text-gray-500 hover:text-sky-600"
+                            }`}
+                    >
+                        Round Trip
+                    </span>
                 </label>
             </div>
 
+
             {/* Search Fields Container */}
-            <div className="flex items-end bg-gray-50 rounded-xl mx-6 mb-6 border border-gray-300">
+            <div className="flex items-end bg-gradient-to-r from-sky-50/80 to-blue-50/80 backdrop-blur-sm rounded-xl mx-6 mb-8 border border-sky-200/60 shadow-lg overflow-visible">
                 {/* From Field */}
-                <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">From</label>
+                <div className="flex-1 bg-white/80 backdrop-blur-sm border-r border-sky-200/60 p-4 hover:bg-white/90 transition-all duration-300">
+                    <label className="block text-xs font-semibold text-sky-700 mb-1 uppercase tracking-wide">From</label>
                     <div className="relative">
                         <input
                             type="text"
                             placeholder="Departure city"
                             name="from"
-                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none placeholder-gray-400"
+                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none placeholder-gray-400 focus:placeholder-sky-300"
                             value={from || ""}
                             onChange={e => dispatch(setInfoTrip({ ...infoTrip, from: e.target.value }))}
                             autoComplete="off"
@@ -188,8 +204,8 @@ function SearchForm() {
                 </div>
 
                 {/* Swap Button */}
-                <div className="flex items-center justify-center z-10 mb-3">
-                    <button className="w-8 h-8 bg-blue-950 text-white rounded-full flex items-center justify-center shadow-md transition-colors">
+                <div className="flex items-center justify-center z-10 mb-4">
+                    <button className="w-10 h-10 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 border-2 border-white/50">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
@@ -198,15 +214,15 @@ function SearchForm() {
 
 
                 {/* To Field */}
-                <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors relative">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">To</label>
+                <div className="flex-1 bg-white/80 backdrop-blur-sm border-r border-sky-200/60 p-4 hover:bg-white/90 transition-all duration-300 relative overflow-visible">
+                    <label className="block text-xs font-semibold text-sky-700 mb-1 uppercase tracking-wide">To</label>
                     <div className="relative">
                         <input
                             type="text"
                             name="to"
                             autoComplete="off"
                             placeholder="Search by city or country"
-                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none placeholder-gray-400"
+                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none placeholder-gray-400 focus:placeholder-sky-300"
                             value={destinationInput}
                             onChange={handleDestinationInputChange}
                             onFocus={() => destinationInput && setShowSuggestions(true)}
@@ -215,7 +231,13 @@ function SearchForm() {
                         />
                         {/* Suggestions Dropdown */}
                         {showSuggestions && suggestions.length > 0 && (
-                            <ul className="absolute z-50 left-0 right-0 top-full bg-white border border-blue-200 rounded-xl mt-2 shadow-xl max-h-56 overflow-y-auto">
+                            <ul className="fixed z-[9999] left-auto right-auto top-auto bg-white/98 backdrop-blur-lg border border-sky-200/60 rounded-xl mt-2 shadow-2xl max-h-56 overflow-y-auto w-full" style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: '0',
+                                right: '0',
+                                zIndex: 9999
+                            }}>
                                 {suggestions.map((destination, index) => {
                                     const searchTerm = destinationInput.toLowerCase();
                                     const cityIndex = destination.city.toLowerCase().indexOf(searchTerm);
@@ -246,11 +268,11 @@ function SearchForm() {
                                     return (
                                         <li
                                             key={index}
-                                            className="py-3 px-4 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-b-0"
+                                            className="py-3 px-4 text-xs cursor-pointer hover:bg-sky-200 bg-sky-50 border-b border-sky-100/50 last:border-b-0 transition-colors duration-200"
                                             onMouseDown={() => handleSuggestionClick(destination)}
                                         >
                                             <span className="font-semibold text-gray-800">{beforeMatch}</span>
-                                            <span className="font-bold text-blue-600">{match}</span>
+                                            <span className="font-bold text-sky-600">{match}</span>
                                             <span className="text-gray-500">{afterMatch}</span>
                                         </li>
                                     );
@@ -261,13 +283,13 @@ function SearchForm() {
                 </div>
 
                 {/* Departure Date */}
-                <div className="flex-1 bg-white border-r border-gray-200 p-4 hover:bg-gray-50 transition-colors">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Depart</label>
+                <div className="flex-1 bg-white/80 backdrop-blur-sm border-r border-sky-200/60 p-4 hover:bg-white/90 transition-all duration-300">
+                    <label className="block text-xs font-semibold text-sky-700 mb-1 uppercase tracking-wide">Depart</label>
                     <div className="relative flex items-center">
                         <input
                             type="date"
                             name="date_depart"
-                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none"
+                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none focus:text-sky-700"
                             value={date_depart}
                             onChange={handleDateDepartChange}
                             required
@@ -276,13 +298,13 @@ function SearchForm() {
                 </div>
 
                 {/* Return Date */}
-                <div className={`flex-1 bg-white p-4 hover:bg-gray-50 transition-colors ${typeTrip === 'oneWay' ? 'opacity-50' : ''} ${typeTrip !== 'oneWay' ? 'border-r border-gray-200' : ''}`}>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Return</label>
+                <div className={`flex-1 bg-white/80 backdrop-blur-sm p-4 hover:bg-white/90 transition-all duration-300 ${typeTrip === 'oneWay' ? 'opacity-50' : ''} ${typeTrip !== 'oneWay' ? 'border-r border-sky-200/60' : ''}`}>
+                    <label className="block text-xs font-semibold text-sky-700 mb-1 uppercase tracking-wide">Return</label>
                     <div className="relative flex items-center">
                         <input
                             type="date"
                             name="date_Arrive"
-                            className={`w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none ${returnDateError ? 'text-red-500' : ''}`}
+                            className={`w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none focus:text-sky-700 ${returnDateError ? 'text-red-500' : ''}`}
                             value={date_Arrive}
                             onChange={handleDateArriveChange}
                             disabled={typeTrip === 'oneWay'}
@@ -293,9 +315,9 @@ function SearchForm() {
                 </div>
 
                 {/* Search Button */}
-                <div className="bg-blue-600 hover:bg-blue-700 transition-colors rounded-r-2xl">
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 rounded-2xl shadow-lg">
                     <button
-                        className="h-full px-8 py-4 text-white font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+                        className="h-full px-8 py-4 text-white font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px] hover:scale-105 transition-transform duration-200"
                         onClick={handleSearch}
                         disabled={isLoading || !isFormValid()}
                     >

@@ -27,7 +27,7 @@ function Home() {
 
   // Handler to set destination in Redux
   const handleDestinationSelect = (destination) => {
-    dispatch(setInfoTrip({ ...infoTrip, to: destination.location }));
+    dispatch(setInfoTrip({ ...infoTrip, to: destination.city }));
     // Optionally, scroll to SearchForm or focus it
     document.getElementById('search-form')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -38,6 +38,7 @@ function Home() {
       title: 'Blue Mountains Day Trip from Sydney',
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
       location: 'Sydney, Australia',
+      city: 'Sydney',
       rate: '4.8',
       price: 340
     },
@@ -45,6 +46,7 @@ function Home() {
       title: 'Stonehenge, Windsor Castle, and Bath',
       image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
       location: 'London, UK',
+      city: 'London',
       rate: '4.6',
       price: 280
     },
@@ -52,6 +54,7 @@ function Home() {
       title: 'Santorini Island Hopping',
       image: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80',
       location: 'Santorini, Greece',
+      city: 'Santorini',
       rate: '4.9',
       price: 520
     },
@@ -59,6 +62,7 @@ function Home() {
       title: 'Tokyo City Explorer',
       image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1494&q=80',
       location: 'Tokyo, Japan',
+      city: 'Tokyo',
       rate: '4.7',
       price: 680
     },
@@ -66,6 +70,7 @@ function Home() {
       title: 'Machu Picchu Adventure',
       image: 'https://images.unsplash.com/photo-1587595431973-160d0d94add1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1476&q=80',
       location: 'Cusco, Peru',
+      city: 'Cusco',
       rate: '4.8',
       price: 750
     },
@@ -73,6 +78,7 @@ function Home() {
       title: 'Dubai Desert Safari',
       image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
       location: 'Dubai, UAE',
+      city: 'Dubai',
       rate: '4.5',
       price: 420
     },
@@ -83,18 +89,7 @@ function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <header className="bg-blue-900 text-white py-20 text-center relative ">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-            <rect width="100" height="100" fill="url(#grid)" />
-          </svg>
-        </div>
+      <header className="bg-gradient-to-r from-sky-600 via-blue-700 to-indigo-800 backdrop-blur-lg text-white py-20 text-center relative ">
 
         <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
           <h1 className="text-5xl md:text-3xl font-extrabold leading-tight mb-8 animate-fade-in-up">

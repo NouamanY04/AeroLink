@@ -10,7 +10,7 @@ function About() {
             <Navbar />
 
             {/* Hero Section - More compact header */}
-            <header className="bg-blue-800  text-white py-14 px-3">
+            <header className="bg-gradient-to-r from-sky-600 via-blue-700 to-indigo-800 backdrop-blur-lg   text-white py-14 px-3">
                 <div className="max-w-5xl mx-auto">
                     <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
                         About AeroLink

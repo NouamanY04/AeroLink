@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Plane, Heart, User, CreditCard, HelpCircle, LogOut, Menu, X, Bell } from 'lucide-react';
 import { getStableAvatarColor } from '../../utils/Avatar';
+import { FiAirplay } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobileMenuOpen, avatarColor, avatarInitial }) => {
     const menuItems = [
@@ -51,28 +53,18 @@ const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobil
             <div className="w-64 bg-white/90 backdrop-blur-md shadow-2xl flex flex-col justify-between h-full border-r border-slate-200/60">
                 {/* Sidebar Content */}
                 <div className="flex flex-col flex-1">
-                    {/* Logo */}
-                    <div className="flex items-center justify-center h-16 px-4 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-lg">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                                <svg
-                                    className="w-5 h-5 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                                    />
-                                </svg>
+                    {/* Logo as link to Home */}
+                    <Link to="/" className="flex items-center space-x-3 group px-4 py-4 bg-gradient-to-r from-sky-600 via-blue-700 to-indigo-800 rounded-b-2xl shadow-md">
+                        <div className="relative">
+                            <div className="w-10 h-10 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:scale-105 transition-all duration-300">
+                                <FiAirplay className="w-5 h-5 text-white transform rotate-45" />
                             </div>
-                            <span className="text-lg font-bold tracking-wide">AeroLink</span>
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-400 to-red-500 rounded-full opacity-80"></div>
                         </div>
-                    </div>
+                        <span className="text-2xl font-bold text-white tracking-tight group-hover:text-sky-200 transition-colors duration-300">
+                            AeroLink
+                        </span>
+                    </Link>
 
                     {/* Navigation */}
                     <nav className="flex-1 px-4 py-6 space-y-2">
