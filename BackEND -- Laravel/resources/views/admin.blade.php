@@ -79,6 +79,13 @@
                         style="font-size: 18px;">group</span>
                     <span class="font-medium">Clients</span>
                 </a>
+
+                <a href="{{ route('contacts.index') }}"
+                    class="flex items-center px-3 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 group text-sm">
+                    <span class="material-icons mr-2 text-blue-300 group-hover:text-white"
+                        style="font-size: 18px;">support_agent</span>
+                    <span class="font-medium">Client Requests</span>
+                </a>
             </nav>
             <div class="px-4 py-3 text-xs text-blue-300/80 border-t border-blue-600/30 flex-shrink-0">
                 © 2025 AeroLink Admin Panel

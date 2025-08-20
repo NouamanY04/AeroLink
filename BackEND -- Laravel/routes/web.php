@@ -34,7 +34,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::resource('bookings', BookingsController::class);
     Route::resource('users', ClientsController::class);
     Route::resource('clients', ClientsController::class);
-    
+    Route::resource('contacts', \App\Http\Controllers\Admin\ContactRequestController::class)->only(['index', 'show', 'destroy']);
+
     // Additional client routes
     Route::get('/clients/{client}/bookings', [ClientsController::class, 'bookings'])->name('clients.bookings');
     
