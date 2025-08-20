@@ -19,6 +19,7 @@ const Reservation = () => {
   const [paymentmethod, setPaymentMethod] = useState('creditCard');
   const [currentStep, setCurrentStep] = useState(1); // Track current step (1, 2, or 3)
   const [ticketDownloaded, setTicketDownloaded] = useState(false);
+  const [isFlightDetailsVisible, setIsFlightDetailsVisible] = useState(false);
   const flightid = useParams();
   const flights = useSelector(state => state.flights.flights)
   const flightwanted = flights.find(flights => flights.id == flightid.id);
@@ -139,6 +140,31 @@ const Reservation = () => {
       <Navbar />
       <div className="max-w-5xl mx-auto px-3 py-4 sm:px-4 lg:px-6">
         <div className="flex flex-col lg:flex-row gap-4">
+          {/* Flight Details Toggle Button - Mobile/Tablet */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => setIsFlightDetailsVisible(!isFlightDetailsVisible)}
+              className="w-full bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Icon icon="mdi:airplane" className="w-4 h-4 text-blue-600" />
+                </div>
+                <span className="text-sm font-medium text-gray-900">Flight Details</span>
+              </div>
+              <Icon
+                icon={isFlightDetailsVisible ? "heroicons:chevron-up" : "heroicons:chevron-down"}
+                className="w-5 h-5 text-gray-500"
+              />
+            </button>
+
+            {/* Collapsible Flight Details Card */}
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFlightDetailsVisible ? 'max-h-100 opacity-100 mb-4' : 'max-h-0 opacity-0'
+              }`}>
+              <FlightDetailsCard flight={flightwanted} />
+            </div>
+          </div>
+
           {/* Main Content Area */}
           <div className="flex-1">
             {/* Progress Steps */}

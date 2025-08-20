@@ -36,9 +36,9 @@ const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobil
             {/* Mobile Menu Button */}
             <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                className="lg:hidden fixed top-4 left-4 z-50 flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-700 rounded-xl shadow-sm hover:bg-gray-200 hover:shadow-md transition-all duration-200"
             >
-                {<Menu size={20} />}
+                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
             {/* Mobile Overlay */}
@@ -50,21 +50,40 @@ const Sidebar = ({ activeSection, setActiveSection, isMobileMenuOpen, setIsMobil
             )}
 
             {/* Sidebar */}
-            <div className="w-64 bg-white/90 backdrop-blur-md shadow-2xl flex flex-col justify-between h-full border-r border-slate-200/60">
+            <div className={`
+                fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white/90 backdrop-blur-md shadow-2xl flex flex-col justify-between h-full border-r border-slate-200/60
+                transform transition-transform duration-300 ease-in-out lg:transform-none
+                ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}>
                 {/* Sidebar Content */}
                 <div className="flex flex-col flex-1">
+
+
                     {/* Logo as link to Home */}
-                    <Link to="/" className="flex items-center space-x-3 group px-4 py-4 bg-gradient-to-r from-sky-600 via-blue-700 to-indigo-800 rounded-b-2xl shadow-md">
-                        <div className="relative">
-                            <div className="w-10 h-10 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:scale-105 transition-all duration-300">
-                                <FiAirplay className="w-5 h-5 text-white transform rotate-45" />
+                    <div className="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-sky-600 via-blue-700 to-indigo-800 shadow-md rounded-b-2xl relative">
+                        {/* Logo + Name */}
+                        <Link to="/" className="flex items-center space-x-3 group">
+                            <div className="relative">
+                                <div className="w-10 h-10 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 group-hover:scale-105 transition-all duration-300">
+                                    <FiAirplay className="w-5 h-5 text-white transform rotate-45" />
+                                </div>
+                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-400 to-red-500 rounded-full opacity-80"></div>
                             </div>
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-400 to-red-500 rounded-full opacity-80"></div>
-                        </div>
-                        <span className="text-2xl font-bold text-white tracking-tight group-hover:text-sky-200 transition-colors duration-300">
-                            AeroLink
-                        </span>
-                    </Link>
+                            <span className="text-2xl font-bold text-white tracking-tight group-hover:text-sky-200 transition-colors duration-300">
+                                AeroLink
+                            </span>
+                        </Link>
+
+                        {/* Mobile Close Button - move to top right, absolute */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="lg:hidden absolute top-3 right-3 p-2 text-slate-200 hover:text-white hover:bg-slate-700/30 rounded-lg transition-colors duration-200 z-50"
+                            aria-label="Close sidebar"
+                        >
+                            <X size={22} />
+                        </button>
+                    </div>
+
 
                     {/* Navigation */}
                     <nav className="flex-1 px-4 py-6 space-y-2">

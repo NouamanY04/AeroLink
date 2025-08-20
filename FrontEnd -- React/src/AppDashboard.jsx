@@ -54,16 +54,20 @@ function AppDashboard() {
         switch (activeSection) {
             case 'dashboard':
                 return (
-                    <div className="space-y-8">
+                    <div className="space-y-8 pt-14">
                         <WelcomePanel />
                         <UpcomingFlights />
                     </div>
                 );
             case 'profile':
-                return <ProfileSettings onContentLoaded={isContentLoaded} avatarColor={avatarColor} avatarInitial={avatarInitial} />;
+                return (
+                    <div className="space-y-8 pt-14">
+                        <ProfileSettings onContentLoaded={isContentLoaded} avatarColor={avatarColor} avatarInitial={avatarInitial} />
+                    </div>
+                );
             default:
                 return (
-                    <div className="space-y-8">
+                    <div className="space-y-8 pt-14">
                         <WelcomePanel />
                         <UpcomingFlights />
                     </div>
@@ -90,14 +94,14 @@ function AppDashboard() {
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 pl-64">
+                <div className="flex-1 lg:pl-64">
                     {/* Fixed Header */}
-                    <div className="fixed top-0 left-64 right-0 z-40 h-16">
+                    <div className="fixed top-0 left-0 lg:left-64 right-0 z-40 h-16">
                         <Header activeSection={activeSection} avatarColor={avatarColor} avatarInitial={avatarInitial} />
                     </div>
 
                     {/* Page Content */}
-                    <main className="p-8 pt-24">
+                    <main className="p-4  md:p-8 min-h-screen overflow-auto">
                         {renderContent()}
                     </main>
                 </div>

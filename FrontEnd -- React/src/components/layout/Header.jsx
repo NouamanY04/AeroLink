@@ -21,7 +21,7 @@ const Header = ({ activeSection, avatarColor, avatarInitial }) => {
                 {/* Page Title and Return Button */}
                 <div className="flex items-center space-x-4">
 
-                    <div className="ml-4">
+                    <div className="ml-10">
                         <h1 className="text-xl font-semibold text-slate-800 tracking-tight">{getSectionTitle(activeSection)}</h1>
                     </div>
                 </div>

@@ -409,7 +409,7 @@ const ForgetPassword = () => {
   return (
     <div>
       <Navbar />
-      <div className='bg-gray-200 min-h-screen py-8 px-4'>
+      <div className='bg-gray-200 min-h-fill py-4 sm:py-6 px-4'>
         <div className='bg-white max-w-md mx-auto rounded-lg shadow-md p-6 overflow-hidden relative'>
           <div className="w-full h-1 bg-gray-200 mb-8">
             <div

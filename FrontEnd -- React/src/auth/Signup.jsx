@@ -95,11 +95,11 @@ const Signup = () => {
   return (
     <div>
       <Navbar />
-      <div className='bg-gray-200 min-h-screen py-8 sm:py-12 md:py-16'>
+      <div className='bg-gray-200 min-h-fill py-8 sm:py-12 md:py-16'>
         <div className='bg-white w-[90%] sm:w-[80%] md:w-[70%] lg:w-[60%] m-auto border border-gray-300 rounded-lg shadow-lg 
-            min-h-[450px] flex flex-col sm:flex-row overflow-hidden'>
+            min-h-[100px] sm:min-h-[200px] flex flex-col sm:flex-row overflow-hidden'>
           {/* Left Side - Full Height */}
-          <div className='bg-gradient-to-br from-blue-600 to-blue-800 w-full sm:w-1/2 p-6 sm:p-8 flex flex-col justify-center min-h-[450px]'>
+          <div className='bg-gradient-to-br from-blue-600 to-blue-800 w-full sm:w-1/2 p-4 sm:p-6 flex flex-col justify-center min-h-[10px] sm:min-h-[200px]'>
             <h1 className='text-white font-semibold text-lg sm:text-xl md:text-2xl'>AeroLink</h1>
             <p className='text-white/90 font-medium text-[10px] sm:text-xs md:text-sm mt-2'>
               Book Your Next Adventure with Ease

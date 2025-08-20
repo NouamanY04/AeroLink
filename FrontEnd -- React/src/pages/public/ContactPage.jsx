@@ -53,7 +53,7 @@ function Contact() {
         </div>
       )}
       {showPopup && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-lg text-[13px] font-medium transition-all duration-300">
+        <div className="fixed top-19 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-lg text-[8px] font-medium transition-all duration-300">
           Thank you for contacting us! We will get back to you soon.
         </div>
       )}
@@ -63,7 +63,7 @@ function Contact() {
         </div>
       )}
       {(!userInfo.username || !userInfo.email) && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-4 py-2 rounded shadow-lg text-[12px] font-medium transition-all duration-300">
+        <div className="fixed top-19 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-4 py-2 rounded shadow-lg text-[8px] font-medium transition-all duration-300">
           Only signed up users can contact our team. Thank you.
         </div>
       )}

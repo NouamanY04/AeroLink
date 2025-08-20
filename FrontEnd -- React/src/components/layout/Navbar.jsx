@@ -85,17 +85,28 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      // Clear localStorage first
       localStorage.removeItem('userLoggedId');
       localStorage.removeItem('userLoggedName');
       localStorage.removeItem('userLoggedEmail');
       localStorage.removeItem('cachedUserInfo');
       localStorage.removeItem('upcomingFlights')
-      setShowUserDropdown(false); // Hide dropdown immediately
-      setUser(null); // Remove user immediately
+      
+      // Force immediate UI state updates
+      setUser(null);
       setAvatarInitial('U');
       setAvatarColor(avatarColors[Math.floor(Math.random() * avatarColors.length)]);
+      setShowUserDropdown(false);
+      setShowMobileMenu(false);
+      
+      // Force re-render by triggering state change
+      window.dispatchEvent(new Event('userInfoUpdated'));
+      
+      // Navigate immediately
       navigate('/login');
+      
+      // Sign out from Supabase (can happen in background)
+      await supabase.auth.signOut();
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -156,7 +167,7 @@ function Navbar() {
           <div className="flex items-center space-x-3">
 
             {/* Profile/Login */}
-            {user && user.username ? (
+            {user && user.username && localStorage.getItem('userLoggedId') ? (
               <div className="relative group hidden md:block">
                 <button
                   className="flex items-center space-x-2 focus:outline-none group"
@@ -249,8 +260,8 @@ function Navbar() {
                 className="flex items-center px-4 py-3 text-white hover:bg-white/10 font-medium transition-colors duration-200 group"
                 onClick={() => setShowMobileMenu(false)}
               >
-                <FiInfo className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" />
-                <span>Help</span>
+                <FiMail className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" />
+                <span>Contact</span>
               </Link>
               {!user && (
                 <>
@@ -265,9 +276,19 @@ function Navbar() {
                   </Link>
                 </>
               )}
-              {user && (
+              {user && user.username && localStorage.getItem('userLoggedId') && (
                 <>
                   <div className="border-t border-white/20 my-1"></div>
+                  {/* User Profile Section */}
+                  <div className="flex items-center px-4 py-3 bg-white/5">
+                    <div className={`w-8 h-8 bg-gradient-to-r ${avatarColor} text-white rounded-full flex items-center justify-center font-bold text-sm border border-white/20`}>
+                      {avatarInitial}
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-white">Welcome back!</p>
+                      <p className="text-xs text-white/70 truncate">{user.username}</p>
+                    </div>
+                  </div>
                   <Link
                     to="/dashboard"
                     className="flex items-center px-4 py-3 text-white hover:bg-white/10 font-medium transition-colors duration-200 group"
@@ -277,7 +298,7 @@ function Navbar() {
                     <span>Dashboard</span>
                   </Link>
                   <button
-                    onClick={() => { handleLogout(); setShowMobileMenu(false); }}
+                    onClick={handleLogout}
                     className="flex items-center w-full px-4 py-3 text-red-300 hover:bg-red-500/20 transition-colors duration-200 group"
                   >
                     <FiLogOut className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" />
